@@ -8,149 +8,197 @@ table, th, td { border: 1px solid black; text-align: left; }
 <script type="text/javascript">
   var total = 500;
   var engHire = false;
- 
+
+  // toggles ensign hire
   function hireEng()
-			{
-				if(engHire == false)
-				{
-					engHire = true;
-					document.getElementById("ensignDiv").style.display = "block";
-					total = total - 200;
-					updateCost();
-				}
-				else
-				{
-					engHire = false;
-					document.getElementById("ensignDiv").style.display = "none";
-					total = total + 200;
-					updateCost();
-				}
-			}
+  {
+    // if hiring ensign, show ensign block, subtract cost
+    if(engHire == false)
+    {
+      engHire = true;
+      document.getElementById("ensignDiv").style.display = "block";
+      total = total - 200;
+      updateCost();
+    }
 
+    // if 'firing' ensign, hide ensign block, refund cost
+    else
+    {
+      engHire = false;
+      document.getElementById("ensignDiv").style.display = "none";
+      total = total + 200;
+      updateCost();
+    }
+  }
+
+
+  //updates troop table row with troop stats
   function updateTableRow(row, x)
-			{
-				var sel = x.value;
-				
-				var myTable = document.getElementById('rosterTable');
+  {
+    var sel = x.value;
 
-				if(sel == "Empty")
-				{
-					myTable.rows[row].cells[1].innerHTML = '-';
-					myTable.rows[row].cells[2].innerHTML = '-';
-					myTable.rows[row].cells[3].innerHTML = '-';
-					myTable.rows[row].cells[4].innerHTML = '-';
-					myTable.rows[row].cells[5].innerHTML = '-'
-					myTable.rows[row].cells[6].innerHTML = '-';
-					myTable.rows[row].cells[7].innerHTML = 0;
-					myTable.rows[row].cells[8].innerHTML = '-';
-				}
-                                {% for troop in people.keys() %}
-                                if(sel == "{{troop}}")
-                                {
-                                        myTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
-                                        myTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
-                                        myTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
-                                        myTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
-                                        myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
-                                        myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
-                                        myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
-                                        myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
+    var myTable = document.getElementById('rosterTable');
 
-                                }
-                                {% endfor %}
-                                updateCost();
-                        }
-  function updateCost()
-			{
-				var sum = 0;
-				var myTable = document.getElementById('rosterTable');
-				
-				for(i = 1; i <= 8; i++)
-				{
-					sum = sum + parseInt(myTable.rows[i].cells[7].innerHTML);
-				}
-				
-				
-				
-				remainingGold.innerHTML = total - sum ;
-			}
+    // if 'sel' is not troop, create empty line
+    if(sel == "Empty")
+    {
+      myTable.rows[row].cells[1].innerHTML = '-';
+      myTable.rows[row].cells[2].innerHTML = '-';
+      myTable.rows[row].cells[3].innerHTML = '-';
+      myTable.rows[row].cells[4].innerHTML = '-';
+      myTable.rows[row].cells[5].innerHTML = '-';
+      myTable.rows[row].cells[6].innerHTML = '-';
+      myTable.rows[row].cells[7].innerHTML = 0;
+      myTable.rows[row].cells[8].innerHTML = '-';
+    }
 
-   function setCapSkillchoice(x)
-   {                          
-                               var choice = x.value;
-                               var myTable = document.getElementById('wizardTable');
-                                var list = myTable.rows[1].cells[8];         
-                                        while (list.hasChildNodes()) {
-                                              list.removeChild(list.firstChild);
-                                        }
-                               if(choice == "Empty")
-			       {        
-             				 list.appendChild(document.createTextNode("No Skills"));
-			       }
-                               {% for spec in skills.keys() %}
-                               if(choice == "{{spec}}")
-                               {
-                                        var div = document.createElement("div");
- 					{% for element in skills[spec] %}
-                                           var tempbutton = document.createElement("input");
-					   tempbutton.setAttribute("type", "radio");
-					   tempbutton.setAttribute("id", "skillchoice");
-					   tempbutton.setAttribute("name", "skillchoice");
-					   tempbutton.setAttribute("value", "{{element}}");
-                                           var templabel = document.createElement("label");
-                                           templabel.appendChild(document.createTextNode("{{element}}"));
-                                           div.appendChild(tempbutton);
-					   div.appendChild(templabel);
-  					{% endfor %}
-                                        list.appendChild(div);
-                                        
-             
-                               }            
-                               {% endfor %}
-   }
+    {% for troop in people.keys() %}
+
+
+    // if 'sel' is a troop, create line with troop stats
+    if(sel == "{{troop}}")
+    {
+      myTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
+      myTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
+      myTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
+      myTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
+      myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
+      myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
+      myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
+     myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
+    }
+
+    {% endfor %}
+
+    updateCost();
+
+    }
+
+
+  // sum up troop cost, subtract from current funds
+    function updateCost()
+    {
+
+      var sum = 0;
+      var roster_table = document.getElementById('rosterTable');
+
+      //sum up cost of 8 troops
+      for(i = 1; i <= 8; i++)
+      {
+        sum = sum + parseInt(roster_table.rows[i].cells[7].innerHTML);
+      }
+
+      //subtract troop cost from current funds
+      remainingGold.innerHTML = total - sum ;
+    }
+
+
+   // store choice made for captain's skill
+    function setCapSkillchoice(x)
+    {
+
+      var choice = x.value;
+      var captain_table = document.getElementById('captainTable');
+      var list = captain_table.rows[1].cells[8];
+
+      while (list.hasChildNodes())
+      {
+        list.removeChild(list.firstChild);
+      }
+
+      if(choice == "Empty")
+      {
+        list.appendChild(document.createTextNode("No Skills"));
+      }
+
+      {% for spec in skills.keys() %}
+
+      if(choice == "{{spec}}")
+      {
+
+        var div = document.createElement("div");
+
+        {% for element in skills[spec] %}
+
+        var tempbutton = document.createElement("input");
+
+         tempbutton.setAttribute("type", "radio");
+         tempbutton.setAttribute("id", "skillchoice");
+         tempbutton.setAttribute("name", "skillchoice");
+         tempbutton.setAttribute("value", "{{element}}");
+
+         var templabel = document.createElement("label");
+
+         templabel.appendChild(document.createTextNode("{{element}}"));
+
+         div.appendChild(tempbutton);
+         div.appendChild(templabel);
+
+         {% endfor %}
+
+         list.appendChild(div);
+         }
+
+         {% endfor %}
+         }
 
     function setEnsSkillchoice(x)
-   {
-                               var choice = x.value;
-                               var myTable = document.getElementById('ensignTable');
-                                var list = myTable.rows[1].cells[8];
-                                        while (list.hasChildNodes()) {
-                                              list.removeChild(list.firstChild);
-                                        }
-                               if(choice == "Empty")
-                               {
-                                         list.appendChild(document.createTextNode("No Skills"));
-                               }
-                               {% for spec in skills.keys() %}
-                               if(choice == "{{spec}}")
-                               {
-                                        var div = document.createElement("div");
-                                        {% for element in skills[spec] %}
-                                           var tempbutton = document.createElement("input");
-                                           tempbutton.setAttribute("type", "radio");
-                                           tempbutton.setAttribute("id", "skillchoiceens");
-                                           tempbutton.setAttribute("name", "skillchoiceens");
-                                           tempbutton.setAttribute("value", "{{element}}");
-                                           var templabel = document.createElement("label");
-                                           templabel.appendChild(document.createTextNode("{{element}}"));
-                                           div.appendChild(tempbutton);
-                                           div.appendChild(templabel);
-                                        {% endfor %}
-                                        list.appendChild(div);
+    {
 
+     var choice = x.value;
+     var myTable = document.getElementById('ensignTable');
+     var list = myTable.rows[1].cells[8];
 
-                               }
-                               {% endfor %}
+     while (list.hasChildNodes())
+       {
+         list.removeChild(list.firstChild);
+       }
+
+     if(choice == "Empty")
+       {
+         list.appendChild(document.createTextNode("No Skills"));
+       }
+
+     {% for spec in skills.keys() %}
+
+         if(choice == "{{spec}}")
+           {
+           var div = document.createElement("div");
+
+           {% for element in skills[spec] %}
+
+               var tempbutton = document.createElement("input");
+
+               tempbutton.setAttribute("type", "radio");
+               tempbutton.setAttribute("id", "skillchoiceens");
+               tempbutton.setAttribute("name", "skillchoiceens");
+               tempbutton.setAttribute("value", "{{element}}");
+
+               var templabel = document.createElement("label");
+
+               templabel.appendChild(document.createTextNode("{{element}}"));
+               div.appendChild(tempbutton);
+               div.appendChild(templabel);
+
+           {% endfor %}
+
+           list.appendChild(div);
+
+          }
+     {% endfor %}
    }
-   
+
    function doFormSubmit()
    {
-     method =  "post"; // Set method to post by default if not specified.
+     // Set method to post by default if not specified.
+     method =  "post";
 
     var form = document.createElement("form");
     form.setAttribute("method", method);
     form.setAttribute("action", "/new");
- 
+
+    //Presuming this comment is vestigial code? keeping it around for now just in case
+    // almost certaintly going to get deleted
 
     /*  bandname = request.form['bandname']
        capspec = request.form['capspec']
@@ -161,7 +209,8 @@ table, th, td { border: 1px solid black; text-align: left; }
        ensweap = request.form['ensweap']
        troops = json.loads(request.form['troops']) */
 
-    var bandname = document.createElement("input");
+
+     var bandname = document.createElement("input");
             bandname.setAttribute("type", "hidden");
             bandname.setAttribute("name", "bandname");
             bandname.setAttribute("value", document.getElementById('bandnametext').value);
@@ -181,6 +230,7 @@ table, th, td { border: 1px solid black; text-align: left; }
             capweap.setAttribute("name", "capweap");
             capweap.setAttribute("value", document.getElementById('capweapsel').value);
             form.appendChild(capweap);
+
      if (engHire)
      {
       var hasensign = document.createElement("input");
@@ -206,11 +256,11 @@ table, th, td { border: 1px solid black; text-align: left; }
        }
 
      var troopsarr = []
-                                for(i = 1; i < 11; i++)
-                                {       
-                                        var selector = document.getElementById('troop'+i);
-                                        troopsarr.push(selector.value);
-                                }
+             for(i = 1; i < 11; i++)
+             {
+               var selector = document.getElementById('troop'+i);
+               troopsarr.push(selector.value);
+             }
      var troops = document.createElement("input");
             troops.setAttribute("type", "hidden");
             troops.setAttribute("name", "troops");
@@ -221,139 +271,139 @@ table, th, td { border: 1px solid black; text-align: left; }
     document.body.appendChild(form);
     form.submit();
    }
-</script>
-</head>
-<body>
 
-<h1>Warband</h1>
-<h2>Warband Name:<input type="text" id="bandnametext" name="bandnametext"></h2>
+  </script>
+  </head>
+  <body>
 
-                <table border="0">
-                        <tr>
-<td><h3>Currency remaining: </h3></td>
-                                <td id='remainingGold'>500</td>
-                        </tr>
-                </table>
-<table id="wizardTable">
-<tr>
-                                <td>Move</td>
-                                <td>Fight</td>
-                                <td>Shoot</td>
-                                <td>Shield</td>
-                                <td>Morale</td>
-                                <td>Health</td>
-                                <td>Specialism</td>
-                                <td>Weapons and Equipment</td>
-                                <td>Skills</td>
-                        </tr>
-<tr>
- 
-                               <td>{{wizard['Captain']['Move']}}</td>
-				<td>{{wizard['Captain']['Fight']}}</td>
-                                <td>{{wizard['Captain']['Shoot']}}</td>
-                                <td>{{wizard['Captain']['Shield']}}</td>
-                                <td>{{wizard['Captain']['Morale']}}</td>
-                                <td>{{wizard['Captain']['Health']}}</td>
-                      
-                                <td><select id="capspecsel" onchange="setCapSkillchoice(this)">
-                                                <option value="Empty">Select...</option>
-                                                {% for spec in specs %}
+    <h1>Warband</h1>
+    <h2>Warband Name:<input type="text" id="bandnametext" name="bandnametext"></h2>
 
-                                                <option value="{{ spec }}">{{ spec }}</option>
-                                                {% endfor %}
-                                        </select></td>
-                                <td>
-<select id="capweapsel">
-                                                <option value="Empty">Select...</option>
-                                                {% for weap in weaps %}
+    <table border="0">
+      <tr>
+        <td><h3>Currency remaining: </h3></td>
+        <td id='remainingGold'>500</td>
+      </tr>
+    </table>
+    <table id="captainTable">
+      <tr>
+        <td>Move</td>
+        <td>Fight</td>
+        <td>Shoot</td>
+        <td>Shield</td>
+        <td>Morale</td>
+        <td>Health</td>
+        <td>Specialism</td>
+        <td>Weapons and Equipment</td>
+        <td>Skills</td>
+      </tr>
+      <tr>
 
-                                                <option value="{{ weap }}">{{ weap }}</option>
-                                                {% endfor %}
-                                        </select>
-</td>
-                                <td></td>
-                        </tr>
+        <td>{{captain['Captain']['Move']}}</td>
+        <td>{{captain['Captain']['Fight']}}</td>
+        <td>{{captain['Captain']['Shoot']}}</td>
+        <td>{{captain['Captain']['Shield']}}</td>
+        <td>{{captain['Captain']['Morale']}}</td>
+        <td>{{captain['Captain']['Health']}}</td>
 
-</table>
-Hire apprentice? <input type="checkbox" name="appHire" onClick="hireEng()">200gc<br>
-<div id="ensignDiv" style='display: none'>
-<table id="ensignTable">
-<tr>
-                                <td>Move</td>
-                                <td>Fight</td>
-                                <td>Shoot</td>
-                                <td>Shield</td>
-                                <td>Morale</td>
-                                <td>Health</td>
-                                <td>Specialism</td>
-                                <td>Weapons and Equipment</td>
-                                <td>Skills</td>
-                        </tr>
-<tr>
- <td>{{apprentice['Ensign']['Move']}}</td>
-                                <td>{{apprentice['Ensign']['Fight']}}</td>
-                                <td>{{apprentice['Ensign']['Shoot']}}</td>
-                                <td>{{apprentice['Ensign']['Shield']}}</td>
-                                <td>{{apprentice['Ensign']['Morale']}}</td>
-                                <td>{{apprentice['Ensign']['Health']}}</td>
-                                <td>
-<select id="ensskillsel" onchange="setEnsSkillchoice(this)">
-  						<option value="Empty">Select...</option>
-                                                {% for spec in specs %}
-						
-  						<option value="{{ spec }}">{{ spec }}</option>
-                                                {% endfor %}
-  					</select>
-</td>
-                                <td>
-<select id="ensweapsel">
-                                                <option value="Empty">Select...</option>
-                                                {% for weap in weaps %}
+        <td><select id="capspecsel" onchange="setCapSkillchoice(this)">
+          <option value="Empty">Select...</option>
+          {% for spec in specs %}
 
-                                                <option value="{{ weap }}">{{ weap }}</option>
-                                                {% endfor %}
-                                        </select>
-</td>
-                                <td></td>
-                        </tr>
+          <option value="{{ spec }}">{{ spec }}</option>
+          {% endfor %}
+          </select></td>
+        <td>
+          <select id="capweapsel">
+            <option value="Empty">Select...</option>
+            {% for weap in weaps %}
 
-</table>
-</div>
-<table id='rosterTable'>
-<tr>
-				<td>Class</td>
-				<td>Move</td>
-				<td>Fight</td>
-				<td>Shoot</td>
-				<td>Shield</td>
-				<td>Morale</td>
-				<td>Health</td>
-				<td>Cost</td>
-				<td>Notes</td>
-			</tr>
-{% for i in range(1,11) %}
-<tr>
-<td>
-<select id="troop{{i}}" onchange="updateTableRow({{ i }}, this)">
-   <option value="Empty">Empty</option>
-     {% for troop in people.keys() %}
-        <option value="{{ troop }}">{{ troop }}</option>
+            <option value="{{ weap }}">{{ weap }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()">200gc<br>
+    <div id="ensignDiv" style='display: none'>
+      <table id="ensignTable">
+        <tr>
+          <td>Move</td>
+          <td>Fight</td>
+          <td>Shoot</td>
+          <td>Shield</td>
+          <td>Morale</td>
+          <td>Health</td>
+          <td>Specialism</td>
+          <td>Weapons and Equipment</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>{{ensign['Ensign']['Move']}}</td>
+          <td>{{ensign['Ensign']['Fight']}}</td>
+          <td>{{ensign['Ensign']['Shoot']}}</td>
+          <td>{{ensign['Ensign']['Shield']}}</td>
+          <td>{{ensign['Ensign']['Morale']}}</td>
+          <td>{{ensign['Ensign']['Health']}}</td>
+          <td>
+            <select id="ensskillsel" onchange="setEnsSkillchoice(this)">
+              <option value="Empty">Select...</option>
+              {% for spec in specs %}
+
+              <option value="{{ spec }}">{{ spec }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <select id="ensweapsel">
+              <option value="Empty">Select...</option>
+              {% for weap in weaps %}
+
+              <option value="{{ weap }}">{{ weap }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td></td>
+        </tr>
+
+      </table>
+    </div>
+    <table id='rosterTable'>
+      <tr>
+        <td>Class</td>
+        <td>Move</td>
+        <td>Fight</td>
+        <td>Shoot</td>
+        <td>Shield</td>
+        <td>Morale</td>
+        <td>Health</td>
+        <td>Cost</td>
+        <td>Notes</td>
+      </tr>
+      {% for i in range(1,11) %}
+      <tr>
+        <td>
+          <select id="troop{{i}}" onchange="updateTableRow({{ i }}, this)">
+            <option value="Empty">Empty</option>
+            {% for troop in people.keys() %}
+            <option value="{{ troop }}">{{ troop }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>0</td>
+        <td>-</td>
+      </tr>
       {% endfor %}
-</select>
-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>0</td>
-                                <td>-</td>
-                        </tr>
-{% endfor %}
-</table>
-<input id="creator" type="button" value="Create Warband" onclick="doFormSubmit();" />
-<input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
-</body>
+    </table>
+    <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit();" />
+    <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
+  </body>
 </html>
-

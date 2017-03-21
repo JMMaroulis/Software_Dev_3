@@ -83,7 +83,7 @@ table, th, td { border: 1px solid black; text-align: left; }
    function setCapSkillchoice(x)
    {                          
                                var choice = x.value;
-                               var myTable = document.getElementById('wizardTable');
+                               var myTable = document.getElementById('captainTable');
                                 var list = myTable.rows[1].cells[8];         
                                         while (list.hasChildNodes()) {
                                               list.removeChild(list.firstChild);
@@ -335,7 +335,7 @@ table, th, td { border: 1px solid black; text-align: left; }
                                 <td id='remainingGold'>{{ band['Treasury'] }}</td>
                         </tr>
                 </table>
-<table id="wizardTable">
+<table id="captainTable">
 <tr>
                                 <td>Move</td>
                                 <td>Fight</td>
@@ -393,7 +393,7 @@ table, th, td { border: 1px solid black; text-align: left; }
                         </tr>
 
 </table>
-Hire apprentice? <input type="checkbox" name="appHire" onClick="hireEng()" {% if 'Ensign' in band.keys() %} checked {%endif%}>200gc<br>
+Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()" {% if 'Ensign' in band.keys() %} checked {%endif%}>200gc<br>
  {% if 'Ensign' in band.keys() %} 
 <div id="ensignDiv" style='display: block'>
 
@@ -463,18 +463,18 @@ Hire apprentice? <input type="checkbox" name="appHire" onClick="hireEng()" {% if
                         </tr>
 {% else %}
 <tr>
- <td>{{apprentice['Ensign']['Move']}}</td>
-                                <td>{{apprentice['Ensign']['Fight']}}</td>
-                                <td>{{apprentice['Ensign']['Shoot']}}</td>
-                                <td>{{apprentice['Ensign']['Shield']}}</td>
-                                <td>{{apprentice['Ensign']['Morale']}}</td>
-                                <td>{{apprentice['Ensign']['Health']}}</td>
+ <td>{{ensign['Ensign']['Move']}}</td>
+                                <td>{{ensign['Ensign']['Fight']}}</td>
+                                <td>{{ensign['Ensign']['Shoot']}}</td>
+                                <td>{{ensign['Ensign']['Shield']}}</td>
+                                <td>{{ensign['Ensign']['Morale']}}</td>
+                                <td>{{ensign['Ensign']['Health']}}</td>
                                 <td>
 <select id="ensskillsel" onchange="setEnsSkillchoice(this)">
                                                 <option value="Empty">Select...</option>
                                                 {% for spec in specs %}
 
-                                                {% if spec == apprentice['Ensign']['Specialism']: %}
+                                                {% if spec == ensign['Ensign']['Specialism']: %}
                                                 <option value="{{ spec }}" selected>{{ spec }}</option>
                                                 {% else %}
                                                 <option value="{{ spec }}">{{ spec }}</option>
@@ -492,7 +492,7 @@ Hire apprentice? <input type="checkbox" name="appHire" onClick="hireEng()" {% if
                                         </select>
 </td>
                                 <td></td>
-                                <td><input id="capexp" type="number" value="{{apprentice['Ensign']['Experience']}}"/></td>
+                                <td><input id="capexp" type="number" value="{{ensign['Ensign']['Experience']}}"/></td>
 
                         </tr>
 

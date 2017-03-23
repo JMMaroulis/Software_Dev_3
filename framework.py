@@ -85,8 +85,23 @@ def sumband(createdband):
 
 
 # cash validation for new band
-def validate_band_cash(createdband):
+def validate_band_cash_new(createdband):
     cash = 500 - sumband(createdband)
+    if cash < 0:
+        return False
+    elif cash >= 0:
+        return True
+
+
+# cash validation for band edit
+# NOT CURRENTLY FULLY FUNCTIONAL
+# REQUIRES METHOD OF GIVING BANDS MORE MONEY TO TURN INTO ADDED_CASH VARIABLE
+def validate_band_cash_edit(loadedband, createdband):
+
+    #placeholder value
+    added_cash = 0
+
+    cash = 500 + added_cash - sumband(createdband)
     if cash < 0:
         return False
     elif cash >= 0:
@@ -99,17 +114,6 @@ def validate_band_troops(createdband):
         return False
     elif len(createdband['Troops']) <= 9:
         return True
-
-
-# Band validation on creation
-def validate_band(createdband):
-    ''' Need to write the validation '''
-    return True
-
-
-# band validation on edit
-def validate_band(oldband, newband):
-    return True
 
 
 # attempts warband creation
@@ -167,10 +171,14 @@ def new_warband():
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
 
+
+
         # not enough money check
-        if not validate_band_cash(createdband):
+        if validate_band_cash_new(createdband) == False:
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
+
+
 
         # define bands treasury
         createdband['Treasury'] = 500 - sumband(createdband)
@@ -189,13 +197,12 @@ def new_warband():
             os.mkdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
             bands = None
 
+        #return app.send_static_file('index.html'), httpcodes.CREATED
+
         return render_template('bandlist.html', bands=bands), httpcodes.CREATED
-        """
-        return render_template('blankband.html', specs=app.specialisms, skills=app.skillsets, people=app.troops,
-                               captain=app.captain, ensign=app.ensign), httpcodes.CREATED
-        """
 
 
+# goes to band roster screen
 @app.route('/edit', methods=['GET'])
 def edit_warband():
     # create band list
@@ -209,7 +216,7 @@ def edit_warband():
     if request.method == 'GET':
         return render_template('bandlist.html', bands=bands), httpcodes.OK
 
-
+# goes to edit particular band screen
 @app.route('/edit/<band>', methods=['GET', 'POST'])
 def edit_given_warband(band):
     loadedband = pickle.load(
@@ -224,11 +231,13 @@ def edit_given_warband(band):
 
         # pull captain stats
         bandname = request.form['bandname']
-        captain_speciality = request.form['captain_speciality']
+        capspec = request.form['capspec']
         # capskill = request.form['capskill']
+
         skills = json.loads(request.form['capskill'])
         capweap = request.form['capweap']
         troops = json.loads(request.form['troops'])
+
         captain_move = request.form['capmove']
         captain_fight = request.form['capfight']
         captain_shoot = request.form['capshoot']
@@ -236,10 +245,12 @@ def edit_given_warband(band):
         captain_morale = request.form['capmorale']
         captain_health = request.form['caphealth']
         captain_experience = request.form['capexperience']
+
+
         createdband = dict()
         createdband['Name'] = bandname
         createdband['Captain'] = dict(app.captain['Captain'])
-        createdband['Captain']['Specialism'] = captain_speciality
+        createdband['Captain']['Specialism'] = capspec
         createdband['Captain']['Skillset'].extend(skills)
         createdband['Captain']['Items'].append(capweap)
         createdband['Captain']['Move'] = captain_move
@@ -285,27 +296,31 @@ def edit_given_warband(band):
 
         # render blank band if too many troops?
         # sounds like a bug to me
-        if len(createdband['Troops']) > 9:
-            return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
-                                   specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.OK
 
-        # if band passes validation
-        if validate_band(loadedband, createdband):
-
-            # set cash at 500 - cost
-            createdband['Treasury'] = 500 - sumband(createdband)
-            pickle.dump(createdband,
-                        open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), bandname),
-                             "wb"))
+        # troop number validation
+        if not validate_band_troops(createdband):
             return render_template('editband.html', band=createdband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                    weaps=app.weapon), httpcodes.OK
 
-        # if band fails validation
-        else:
+        # warband cash validation
+        if not validate_band_cash_edit(loadedband, createdband):
             return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
-                                   weaps=app.weapon), httpcodes.BAD_REQUEST
+                                   weaps=app.weapon), httpcodes.BADREQUEST
+
+        # at this point, have passed validation
+
+        # set cash at 500 - cost
+        # NEED WAY TO ADD CASH
+        createdband['Treasury'] = 500 - sumband(createdband)
+        pickle.dump(createdband,
+                    open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), bandname),
+                         "wb"))
+
+        return render_template('editband.html', band=createdband, people=app.troops, captain=app.captain,
+                               ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
+                               weaps=app.weapon), httpcodes.OK
 
 
 @app.route('/delete/<band>', methods=['GET'])

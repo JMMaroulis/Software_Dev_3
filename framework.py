@@ -56,8 +56,6 @@ app.cost = {'Blaster': 5, 'Needle Gun': 12, 'Blade': 3, 'Cannon': 15, 'Whip': 5}
 
 
 @app.route('/', methods=['GET'])
-
-
 # runs welcome page
 def welcome_page():
     return app.send_static_file('index.html'), httpcodes.OK
@@ -84,6 +82,23 @@ def sumband(createdband):
         total = total + app.troops[troop]['Cost']
 
     return total
+
+
+# cash validation for new band
+def validate_band_cash(createdband):
+    cash = 500 - sumband(createdband)
+    if cash < 0:
+        return False
+    elif cash >= 0:
+        return True
+
+
+# troop number validation for new band
+def validate_band_troops(createdband):
+    if len(createdband['Troops']) > 9:
+        return False
+    elif len(createdband['Troops']) <= 9:
+        return True
 
 
 # Band validation on creation
@@ -147,21 +162,38 @@ def new_warband():
                 createdband['Troops'].append(item)
 
         # too many crew check
-        if len(createdband['Troops']) > 9:
-            return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
-                                   specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.OK
-        createdband['Treasury'] = 500 - sumband(createdband)
-
-        # not enough money check
-        if createdband['Treasury'] < 0:
+        if validate_band_troops(createdband) == False:
+            # returns blank, doesn't throw error, doesn't create band
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
+
+        # not enough money check
+        if not validate_band_cash(createdband):
+            return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
+                                   specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
+
+        # define bands treasury
+        createdband['Treasury'] = 500 - sumband(createdband)
+
+        # store band details
         pickle.dump(createdband,
                     open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), bandname),
                          "wb"))
 
+        # create band list
+        if os.path.isdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands")):
+            bands = os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
+
+        # if there are no bands, make a null bands object
+        else:
+            os.mkdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
+            bands = None
+
+        return render_template('bandlist.html', bands=bands), httpcodes.CREATED
+        """
         return render_template('blankband.html', specs=app.specialisms, skills=app.skillsets, people=app.troops,
                                captain=app.captain, ensign=app.ensign), httpcodes.CREATED
+        """
 
 
 @app.route('/edit', methods=['GET'])

@@ -307,7 +307,7 @@ table, th, td { border: 1px solid black; text-align: left; }
        }
      
      var troopsarr = []
-                                for(i = 1; i < 11; i++)
+                                for(i = 1; i < 9; i++)
                                 {       
                                         var selector = document.getElementById('troop'+i);
                                         troopsarr.push(selector.value);
@@ -538,7 +538,7 @@ Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()" {% if 'En
                         </tr>
 {% set p = p + 1 %}
 {% endfor %}
-{% for i in range((band['Troops']|length)+1,11) %}
+{% for i in range((band['Troops']|length)+1,9) %}
 <tr>
 <td>
 <select id="troop{{i}}" onchange="updateTableRow({{ i }}, this)">

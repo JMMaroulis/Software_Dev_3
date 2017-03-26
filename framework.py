@@ -232,7 +232,7 @@ def edit_given_warband(band):
         # pull captain stats
         bandname = request.form['bandname']
         capspec = request.form['capspec']
-        # capskill = request.form['capskill']
+        #capskill = request.form['capskill']
 
         skills = json.loads(request.form['capskill'])
         capweap = request.form['capweap']
@@ -245,7 +245,6 @@ def edit_given_warband(band):
         captain_morale = request.form['capmorale']
         captain_health = request.form['caphealth']
         captain_experience = request.form['capexperience']
-
 
         createdband = dict()
         createdband['Name'] = bandname
@@ -264,7 +263,7 @@ def edit_given_warband(band):
         # if ensign exists, pull ensign stats
         if 'hasensign' in request.form.keys():
             ensspec = request.form['ensspec']
-            # ensskill = request.form['ensskill']
+            #ensskill = request.form['ensskill']
             ensign_skill = json.loads(request.form['ensign_skill'])
             ensign_move = request.form['ensmove']
             ensign_fight = request.form['ensfight']
@@ -299,9 +298,9 @@ def edit_given_warband(band):
 
         # troop number validation
         if not validate_band_troops(createdband):
-            return render_template('editband.html', band=createdband, people=app.troops, captain=app.captain,
+            return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
-                                   weaps=app.weapon), httpcodes.OK
+                                   weaps=app.weapon), httpcodes.BADREQUEST
 
         # warband cash validation
         if not validate_band_cash_edit(loadedband, createdband):
@@ -311,9 +310,9 @@ def edit_given_warband(band):
 
         # at this point, have passed validation
 
-        # set cash at 500 - cost
+        # set cash at remaining cash level
         # NEED WAY TO ADD CASH
-        createdband['Treasury'] = 500 - sumband(createdband)
+        createdband['Treasury'] = int(request.form['remainingGold'])
         pickle.dump(createdband,
                     open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), bandname),
                          "wb"))

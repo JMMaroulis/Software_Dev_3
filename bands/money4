@@ -11,7 +11,7 @@ I12
 sS'Items'
 p5
 (lp6
-VBlaster
+VBlade
 p7
 asS'Move'
 p8
@@ -28,7 +28,7 @@ I4
 sS'Skillset'
 p12
 (lp13
-VRepair
+VBolster
 p14
 asS'Cost'
 p15
@@ -38,18 +38,16 @@ p16
 I12
 sS'Specialism'
 p17
-VEngineering
+VPsychology
 p18
 ssS'Treasury'
 p19
-I475
+I497
 sS'Name'
 p20
-VFlomp
+Vmoney4
 p21
 sS'Troops'
 p22
 (lp23
-VAugment Gorilla
-p24
-as.
+s.

@@ -10,34 +10,38 @@
       {% if 'Ensign' in band.keys():  %}
       var engHire = true;
        var hadEnsign = true;
-       {%else%}
-       var engHire = false;
-        var hadEnsign = false;
-        {% endif %}
-        function hireEng()
+      {%else%}
+      var engHire = false;
+       var hadEnsign = false;
+      {% endif %}
+
+      function hireEng()
          {
+           //show ensign, take cost from total
            if(engHire == false)
            {
              engHire = true;
              document.getElementById("ensignDiv").style.display = "block";
-             total = total - 200;
+             total = total - 250;
              updateCost();
            }
+           //don't show ensign, DON'T resund ensign costs
            else
            {
              engHire = false;
              document.getElementById("ensignDiv").style.display = "none";
-             total = total + 200;
              updateCost();
            }
          }
 
+         //occurs on troop change
          function updateTableRow(row, x)
          {
            var sel = x.value;
 
            var myTable = document.getElementById('rosterTable');
 
+           //if troop fired (NO REFUND)
            if(sel == "Empty")
            {
              myTable.rows[row].cells[1].innerHTML = '-';
@@ -49,6 +53,8 @@
              myTable.rows[row].cells[7].innerHTML = 0;
              myTable.rows[row].cells[8].innerHTML = '-';
            }
+
+           //if troop hired
            {% for troop in people.keys() %}
            if(sel == "{{troop}}")
            {
@@ -59,24 +65,19 @@
              myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
              myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
              myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
-            myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
+             myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
+            total = total - {{ people[troop]['Cost'] }}
+           updateCost()
 
            }
            {% endfor %}
-           updateCost();
+           //updateCost();
            }
+
            function updateCost()
            {
              var sum = 0;
              var myTable = document.getElementById('rosterTable');
-
-             for(i = 1; i <= 8; i++)
-             {
-               sum = sum + parseInt(myTable.rows[i].cells[7].innerHTML);
-             }
-
-
-
              remainingGold.innerHTML = total - sum ;
            }
 
@@ -148,7 +149,7 @@
                      {% endfor %}
                      }
 
-                     function doFormSubmit()
+                     function doFormSubmit(total)
                      {
                        method =  "post"; // Set method to post by default if not specified.
 
@@ -156,11 +157,17 @@
                        form.setAttribute("method", method);
                        form.setAttribute("action", "/edit/{{ band['Name'] }}");
 
+                       var remainingGold = document.createElement("input");
+                       remainingGold.setAttribute("type", "hidden");
+                       remainingGold.setAttribute("name", "remainingGold");
+                       remainingGold.setAttribute("value", total);
+                       form.appendChild(remainingGold);
 
                        var bandname = document.createElement("input");
                        bandname.setAttribute("type", "hidden");
                        bandname.setAttribute("name", "bandname");
-                       bandname.setAttribute("value", document.getElementById('bandnametext').value);
+                       //bandname.setAttribute("value", document.getElementById('bandnametext').value);
+                       bandname.setAttribute("value", "bananarama");
                        form.appendChild(bandname);
                        var capspec = document.createElement("input");
                        capspec.setAttribute("type", "hidden");
@@ -318,7 +325,6 @@
                        troops.setAttribute("value", JSON.stringify(troopsarr));
                        form.appendChild(troops);
 
-
                        document.body.appendChild(form);
                        form.submit();
                      }
@@ -393,7 +399,7 @@
       </tr>
 
     </table>
-    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()" {% if 'Ensign' in band.keys() %} checked {%endif%}>200gc<br>
+    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()" {% if 'Ensign' in band.keys() %} checked {%endif%}>250gc<br>
     {% if 'Ensign' in band.keys() %}
     <div id="ensignDiv" style='display: block'>
 
@@ -422,8 +428,8 @@
             <td><input id="ensho" type="number" value="{{band['Ensign']['Shoot']}}"></td>
             <td><input id="enshi" type="number" value="{{band['Ensign']['Shield']}}"></td>
             <td><input id="enmor" type="number" value="{{band['Ensign']['Morale']}}"></td>
-            <td><input id="enhea" type="number" value="{{band['Ensign']['Health']}}"></td>                                <td>
-            <select id="ensskillsel" onchange="setEnsSkillchoice(this)" disabled>
+            <td><input id="enhea" type="number" value="{{band['Ensign']['Health']}}"></td>
+            <td><select id="ensskillsel" onchange="setEnsSkillchoice(this)" disabled>
               <option value="Empty">Select...</option>
               {% for spec in specs %}
 
@@ -559,8 +565,8 @@
         </tr>
         {% endfor %}
       </table>
-      <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit();" />
-      <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
+      <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
+      <input id="cancel" type="button" value="Cancel" onclick="window.location.href='/edit'" />
       </body>
     </html>
 

@@ -17,7 +17,7 @@ table, th, td { border: 1px solid black; text-align: left; }
     {
       engHire = true;
       document.getElementById("ensignDiv").style.display = "block";
-      total = total - 200;
+      total = total - 250;
       updateCost();
     }
 
@@ -26,7 +26,7 @@ table, th, td { border: 1px solid black; text-align: left; }
     {
       engHire = false;
       document.getElementById("ensignDiv").style.display = "none";
-      total = total + 200;
+      total = total + 250;
       updateCost();
     }
   }
@@ -326,7 +326,7 @@ table, th, td { border: 1px solid black; text-align: left; }
       </tr>
 
     </table>
-    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()">200gc<br>
+    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()">250gc<br>
     <div id="ensignDiv" style='display: none'>
       <table id="ensignTable">
         <tr>

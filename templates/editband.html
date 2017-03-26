@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ship Crew Editor</title>
+    <title>Warband Editor</title>
     <style>
       table, th, td { border: 1px solid black; text-align: left; }
     </style>
@@ -15,6 +15,14 @@
        var hadEnsign = false;
       {% endif %}
 
+        function unescapeHtml(escapedStr)
+        {
+          var div = document.createElement('div');
+          div.innerHTML = escapedStr;
+          var child = div.childNodes[0];
+          return child ? child.nodeValue : '';
+        }
+
       function hireEng()
          {
            //show ensign, take cost from total
@@ -25,7 +33,7 @@
              total = total - 250;
              updateCost();
            }
-           //don't show ensign, DON'T resund ensign costs
+           //don't show ensign, DON'T refund ensign costs
            else
            {
              engHire = false;
@@ -79,6 +87,17 @@
              var sum = 0;
              var myTable = document.getElementById('rosterTable');
              remainingGold.innerHTML = total - sum ;
+
+              console.log({{ band['capweap'] }});
+             {% for weapon in band['capweap'] %}
+             {
+             console.log(weapon);
+             }
+             {% endfor %}
+
+             //console.log({{ band['capweap'] }});
+
+
            }
 
            function setCapSkillchoice(x)
@@ -149,6 +168,17 @@
                      {% endfor %}
                      }
 
+                      // shamelessly stolen from http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+                      // One hopes tis indeed foolproof.
+                      // Use the browser's built-in functionality to quickly and safely escape
+                      // the string
+                      function escapeHTML(str)
+                      {
+                      var div = document.createElement('div');
+                      div.appendChild(document.createTextNode(str));
+                      return div.innerHTML;
+                      }
+
                      function doFormSubmit(total)
                      {
                        method =  "post"; // Set method to post by default if not specified.
@@ -156,6 +186,8 @@
                        var form = document.createElement("form");
                        form.setAttribute("method", method);
                        form.setAttribute("action", "/edit/{{ band['Name'] }}");
+
+                       console.log(total)
 
                        var remainingGold = document.createElement("input");
                        remainingGold.setAttribute("type", "hidden");
@@ -166,8 +198,7 @@
                        var bandname = document.createElement("input");
                        bandname.setAttribute("type", "hidden");
                        bandname.setAttribute("name", "bandname");
-                       //bandname.setAttribute("value", document.getElementById('bandnametext').value);
-                       bandname.setAttribute("value", "bananarama");
+                       bandname.setAttribute("value", escapeHTML(document.getElementById('bandnametext').value));
                        form.appendChild(bandname);
                        var capspec = document.createElement("input");
                        capspec.setAttribute("type", "hidden");

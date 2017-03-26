@@ -11,7 +11,7 @@ I12
 sS'Items'
 p5
 (lp6
-VBlade
+VCannon
 p7
 asS'Move'
 p8
@@ -28,7 +28,7 @@ I4
 sS'Skillset'
 p12
 (lp13
-VBolster
+VSquad
 p14
 asS'Cost'
 p15
@@ -38,16 +38,18 @@ p16
 I12
 sS'Specialism'
 p17
-VPsychology
+VTactics
 p18
 ssS'Treasury'
 p19
-I497
+I335
 sS'Name'
 p20
-Vmoney4
+V350-cannon
 p21
 sS'Troops'
 p22
 (lp23
-s.
+VCombat Droid
+p24
+as.

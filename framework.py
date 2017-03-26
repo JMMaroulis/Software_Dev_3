@@ -3,6 +3,7 @@ import logging
 import json
 import os
 import pickle
+import cgi
 from flask import Flask, request, render_template, redirect, g, send_from_directory
 
 # Create exportable app
@@ -49,10 +50,13 @@ app.skillsets = {'Engineering': ['Repair', 'Sabotage', 'Augment'], 'Psychology':
                  'Melee': ['Block', 'Risposte', 'Dual'], 'Defence': ['Shield', 'Sacrifice', 'Resolute']}
 
 # available items list
-app.weapon = ['Blaster', 'Needle Gun', 'Blade', 'Cannon', 'Whip']
+app.weapon = {'Blaster': 5, 'Needle Gun': 12, 'Blade': 3, 'Cannon': 15, 'Whip': 5}
 
 # item costs dictionary
 app.cost = {'Blaster': 5, 'Needle Gun': 12, 'Blade': 3, 'Cannon': 15, 'Whip': 5}
+
+app.capweaps = []
+app.ensweaps = []
 
 
 @app.route('/', methods=['GET'])
@@ -86,7 +90,7 @@ def sumband(createdband):
 
 # cash validation for new band
 def validate_band_cash_new(createdband):
-    cash = 500 - sumband(createdband)
+    cash = int(request.form['remainingGold'])
     if cash < 0:
         return False
     elif cash >= 0:
@@ -116,6 +120,14 @@ def validate_band_troops(createdband):
         return True
 
 
+# check band name isn't an empty string
+def validate_band_name(createdband):
+    if not createdband['Name']:
+        return False
+    elif createdband['Name']:
+        return True
+
+
 # attempts warband creation
 @app.route('/new', methods=['GET', 'POST'])
 def new_warband():
@@ -130,7 +142,8 @@ def new_warband():
         bandname = request.form['bandname']
         capspec = request.form['capspec']
         capskill = request.form['capskill']
-        capweap = request.form['capweap']
+        capweap = json.loads(request.form['capweap'])
+        print(capweap)
         troops = json.loads(request.form['troops'])
 
         # create dictionary to hold band details
@@ -141,7 +154,14 @@ def new_warband():
         createdband['Captain'] = dict(app.captain['Captain'])
         createdband['Captain']['Specialism'] = capspec
         createdband['Captain']['Skillset'].append(capskill)
-        createdband['Captain']['Items'].append(capweap)
+        # createdband['Captain']['Items'].append(capweap)
+
+        createdband['capweap'] = []
+        for weapon in capweap:
+            createdband['capweap'].append(weapon)
+
+        print(createdband['capweap'])
+
 
         # if ensign exists, put ensign dictionaries in band dictionary
         if 'hasensign' in request.form.keys():
@@ -156,6 +176,9 @@ def new_warband():
             createdband['Ensign']['Specialism'] = ensspec
             createdband['Ensign']['Skillset'].append(ensskill)
             createdband['Ensign']['Items'].append(ensweap)
+
+        #warband name sanitization
+        cgi.escape(createdband['Name'])
 
         # create empty troop dictionary
         createdband['Troops'] = []
@@ -181,7 +204,7 @@ def new_warband():
 
 
         # define bands treasury
-        createdband['Treasury'] = 500 - sumband(createdband)
+        createdband['Treasury'] = int(request.form['remainingGold'])
 
         # store band details
         pickle.dump(createdband,
@@ -223,19 +246,19 @@ def edit_given_warband(band):
         open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), band), "rb"))
 
     if request.method == 'GET':
+        print(loadedband)
         return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
-                               weaps=app.weapon), httpcodes.OK
+                               weaps=app.weapon, capweaps=loadedband['capweap']), httpcodes.OK
 
     if request.method == 'POST':
 
         # pull captain stats
         bandname = request.form['bandname']
         capspec = request.form['capspec']
-        #capskill = request.form['capskill']
 
         skills = json.loads(request.form['capskill'])
-        capweap = request.form['capweap']
+        capweap = json.loads(request.form['capweap'])
         troops = json.loads(request.form['troops'])
 
         captain_move = request.form['capmove']
@@ -285,6 +308,9 @@ def edit_given_warband(band):
             createdband['Ensign']['Health'] = ensign_health
             createdband['Ensign']['Experience'] = ensign_experience
 
+        #warband name sanitization
+        cgi.escape(createdband['Name'])
+
         # create troops list
         createdband['Troops'] = []
 
@@ -308,7 +334,20 @@ def edit_given_warband(band):
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                    weaps=app.weapon), httpcodes.BADREQUEST
 
+        # warband name validation
+        if not validate_band_name(createdband):
+            return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
+                                   ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
+                                   weaps=app.weapon), httpcodes.BADREQUEST
+
         # at this point, have passed validation
+
+        # delete original if name changes
+        # FOR THE LOVE OF ALL THAT'S HOLY, DO THIS AFTER THE VALIDATION
+        # DELETING THINGS IS BAD
+        if loadedband['Name'] != bandname:
+            delete_given_warband(loadedband['Name'])
+            print('Deleting duplicate!')
 
         # set cash at remaining cash level
         # NEED WAY TO ADD CASH

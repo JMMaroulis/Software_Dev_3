@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Ship Crew Editor</title>
+<title>Warband Creator</title>
 <style>
 table, th, td { border: 1px solid black; text-align: left; }
 </style>
@@ -32,65 +32,85 @@ table, th, td { border: 1px solid black; text-align: left; }
   }
 
 
-  //updates troop table row with troop stats
-  function updateTableRow(row, x)
-  {
-    var sel = x.value;
+  //occurs on troop change
+ function updateTableRow(row, x)
+ {
+   var sel = x.value;
 
-    var myTable = document.getElementById('rosterTable');
+   var myTable = document.getElementById('rosterTable');
 
-    // if 'sel' is not troop, create empty line
-    if(sel == "Empty")
-    {
-      myTable.rows[row].cells[1].innerHTML = '-';
-      myTable.rows[row].cells[2].innerHTML = '-';
-      myTable.rows[row].cells[3].innerHTML = '-';
-      myTable.rows[row].cells[4].innerHTML = '-';
-      myTable.rows[row].cells[5].innerHTML = '-';
-      myTable.rows[row].cells[6].innerHTML = '-';
-      myTable.rows[row].cells[7].innerHTML = 0;
-      myTable.rows[row].cells[8].innerHTML = '-';
-    }
+   //if troop fired
+   if(sel == "Empty")
+   {
+     myTable.rows[row].cells[1].innerHTML = '-';
+     myTable.rows[row].cells[2].innerHTML = '-';
+     myTable.rows[row].cells[3].innerHTML = '-';
+     myTable.rows[row].cells[4].innerHTML = '-';
+     myTable.rows[row].cells[5].innerHTML = '-'
+     myTable.rows[row].cells[6].innerHTML = '-';
+     myTable.rows[row].cells[7].innerHTML = 0;
+     myTable.rows[row].cells[8].innerHTML = '-';
+   }
 
-    {% for troop in people.keys() %}
-
-
-    // if 'sel' is a troop, create line with troop stats
-    if(sel == "{{troop}}")
-    {
-      myTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
-      myTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
-      myTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
-      myTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
-      myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
-      myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
-      myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
+   //if troop hired
+   {% for troop in people.keys() %}
+   if(sel == "{{troop}}")
+   {
+     myTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
+     myTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
+     myTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
+     myTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
+     myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
+     myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
+     myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
      myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
-    }
-
-    {% endfor %}
-
-    updateCost();
-
-    }
+   }
+   {% endfor %}
+   updateCost();
+   }
 
 
-  // sum up troop cost, subtract from current funds
-    function updateCost()
+// sum up troop cost, subtract from current funds
+function updateCost()
+{
+
+  var sum = 0;
+  var roster_table = document.getElementById('rosterTable');
+
+  //if ensign hired
+  if(document.getElementById("ensHire").checked)
+  {
+  sum += 250
+  }
+
+  //sum up cost of 8 troops
+  for(i = 1; i <= 8; i++)
+  {
+    sum = sum + parseInt(roster_table.rows[i].cells[7].innerHTML);
+  }
+
+
+  //sum up item costs
+  {% for weap in weaps %}
+
+    if(document.getElementById("{{weap}}_check").checked)
     {
-
-      var sum = 0;
-      var roster_table = document.getElementById('rosterTable');
-
-      //sum up cost of 8 troops
-      for(i = 1; i <= 8; i++)
-      {
-        sum = sum + parseInt(roster_table.rows[i].cells[7].innerHTML);
-      }
-
-      //subtract troop cost from current funds
-      remainingGold.innerHTML = total - sum ;
+     sum += {{weaps[weap]}};
     }
+    if(document.getElementById("{{weap}}_ens_check").checked)
+    {
+     sum += {{weaps[weap]}};
+    }
+
+   {% endfor %}
+
+
+
+    //subtract troop cost from current funds
+    total = 500 - sum;
+    remainingGold.innerHTML = total;
+    console.log(total);
+  }
 
 
    // store choice made for captain's skill
@@ -188,7 +208,18 @@ table, th, td { border: 1px solid black; text-align: left; }
      {% endfor %}
    }
 
-   function doFormSubmit()
+    // shamelessly stolen from http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+    // One hopes tis indeed foolproof.
+    // Use the browser's built-in functionality to quickly and safely escape
+    // the string
+    function escapeHTML(str)
+    {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+    }
+
+   function doFormSubmit(total)
    {
      // Set method to post by default if not specified.
      method =  "post";
@@ -209,11 +240,19 @@ table, th, td { border: 1px solid black; text-align: left; }
        ensweap = request.form['ensweap']
        troops = json.loads(request.form['troops']) */
 
+     console.log(total)
 
+     var remainingGold = document.createElement("input");
+     remainingGold.setAttribute("type", "hidden");
+     remainingGold.setAttribute("name", "remainingGold");
+     remainingGold.setAttribute("value", total);
+     form.appendChild(remainingGold);
+
+     //sanitize first!
      var bandname = document.createElement("input");
             bandname.setAttribute("type", "hidden");
             bandname.setAttribute("name", "bandname");
-            bandname.setAttribute("value", document.getElementById('bandnametext').value);
+            bandname.setAttribute("value", escapeHTML(document.getElementById('bandnametext').value));
             form.appendChild(bandname);
      var capspec = document.createElement("input");
             capspec.setAttribute("type", "hidden");
@@ -225,10 +264,27 @@ table, th, td { border: 1px solid black; text-align: left; }
             capskill.setAttribute("name", "capskill");
             capskill.setAttribute("value", document.getElementById('skillchoice').value);
             form.appendChild(capskill);
+
+     var capweap_array = []
+                {% for weap in weaps %}
+
+                  if(document.getElementById("{{weap}}_check").checked)
+                  {
+                   var weapon = "{{weap}}"
+                   //sum += {{weaps[weap]}};
+                   capweap_array.push(weapon)
+                  }
+
+
+                 {% endfor %}
+
+                 console.log(capweap_array)
+                 console.log(capweap_array.prototype.toString)
+
      var capweap = document.createElement("input");
             capweap.setAttribute("type", "hidden");
             capweap.setAttribute("name", "capweap");
-            capweap.setAttribute("value", document.getElementById('capweapsel').value);
+            capweap.setAttribute("value", JSON.stringify(capweap_array));
             form.appendChild(capweap);
 
      if (engHire)
@@ -314,10 +370,8 @@ table, th, td { border: 1px solid black; text-align: left; }
           {% endfor %}
           </select></td>
         <td>
-          <select id="capweapsel">
-            <option value="Empty">Select...</option>
             {% for weap in weaps %}
-
+            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()">
             <option value="{{ weap }}">{{ weap }}</option>
             {% endfor %}
           </select>
@@ -326,7 +380,7 @@ table, th, td { border: 1px solid black; text-align: left; }
       </tr>
 
     </table>
-    Hire ensign? <input type="checkbox" name="appHire" onClick="hireEng()">250gc<br>
+    Hire ensign? <input type="checkbox" name="appHire" id="ensHire" onClick="hireEng()">250gc<br>
     <div id="ensignDiv" style='display: none'>
       <table id="ensignTable">
         <tr>
@@ -356,13 +410,11 @@ table, th, td { border: 1px solid black; text-align: left; }
               {% endfor %}
             </select>
           </td>
-          <td>
-            <select id="ensweapsel">
-              <option value="Empty">Select...</option>
-              {% for weap in weaps %}
-
-              <option value="{{ weap }}">{{ weap }}</option>
-              {% endfor %}
+        <td>
+            {% for weap in weaps %}
+            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()">
+            <option value="{{ weap }}">{{ weap }}</option>
+            {% endfor %}
             </select>
           </td>
           <td></td>
@@ -403,7 +455,7 @@ table, th, td { border: 1px solid black; text-align: left; }
       </tr>
       {% endfor %}
     </table>
-    <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit();" />
+    <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
     <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
   </body>
 </html>

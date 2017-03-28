@@ -5,6 +5,136 @@
 <style>
 table, th, td { border: 1px solid black; text-align: left; }
 </style>
+  </head>
+  <body>
+
+    <h1>Warband</h1>
+    <h2>Warband Name:<input type="text" id="bandnametext" name="bandnametext"></h2>
+
+    <table border="0">
+      <tr>
+        <td><h3>Currency remaining: </h3></td>
+        <td id='remainingGold'>500</td>
+      </tr>
+    </table>
+    <table id="captainTable">
+      <tr>
+        <td>Move</td>
+        <td>Fight</td>
+        <td>Shoot</td>
+        <td>Shield</td>
+        <td>Morale</td>
+        <td>Health</td>
+        <td>Specialism</td>
+        <td>Weapons and Equipment</td>
+        <td>Skills</td>
+      </tr>
+      <tr>
+
+        <td>{{captain['Captain']['Move']}}</td>
+        <td>{{captain['Captain']['Fight']}}</td>
+        <td>{{captain['Captain']['Shoot']}}</td>
+        <td>{{captain['Captain']['Shield']}}</td>
+        <td>{{captain['Captain']['Morale']}}</td>
+        <td>{{captain['Captain']['Health']}}</td>
+
+        <td><select id="capspecsel" onchange="setCapSkillchoice(this)">
+          <option value="Empty">Select...</option>
+          {% for spec in specs %}
+
+          <option value="{{ spec }}">{{ spec }}</option>
+          {% endfor %}
+          </select></td>
+        <td>
+            {% for weap in weaps %}
+            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()">
+            <option value="{{ weap }}">{{ weap }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td></td>
+      </tr>
+
+    </table>
+    Hire ensign? <input type="checkbox" name="appHire" id="ensHire" onClick="hireEng()">250gc<br>
+    <div id="ensignDiv" style='display: none'>
+      <table id="ensignTable">
+        <tr>
+          <td>Move</td>
+          <td>Fight</td>
+          <td>Shoot</td>
+          <td>Shield</td>
+          <td>Morale</td>
+          <td>Health</td>
+          <td>Specialism</td>
+          <td>Weapons and Equipment</td>
+          <td>Skills</td>
+        </tr>
+        <tr>
+          <td>{{ensign['Ensign']['Move']}}</td>
+          <td>{{ensign['Ensign']['Fight']}}</td>
+          <td>{{ensign['Ensign']['Shoot']}}</td>
+          <td>{{ensign['Ensign']['Shield']}}</td>
+          <td>{{ensign['Ensign']['Morale']}}</td>
+          <td>{{ensign['Ensign']['Health']}}</td>
+          <td>
+            <select id="ensskillsel" onchange="setEnsSkillchoice(this)">
+              <option value="Empty">Select...</option>
+              {% for spec in specs %}
+
+              <option value="{{ spec }}">{{ spec }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        <td>
+            {% for weap in weaps %}
+            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()">
+            <option value="{{ weap }}">{{ weap }}</option>
+            {% endfor %}
+            </select>
+          </td>
+          <td></td>
+        </tr>
+
+      </table>
+    </div>
+    <table id='rosterTable'>
+      <tr>
+        <td>Class</td>
+        <td>Move</td>
+        <td>Fight</td>
+        <td>Shoot</td>
+        <td>Shield</td>
+        <td>Morale</td>
+        <td>Health</td>
+        <td>Cost</td>
+        <td>Notes</td>
+      </tr>
+      {% for i in range(1,9) %}
+      <tr>
+        <td>
+          <select id="troop{{i}}" onchange="updateTableRow({{ i }}, this)">
+            <option value="Empty">Empty</option>
+            {% for troop in people.keys() %}
+            <option value="{{ troop }}">{{ troop }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>0</td>
+        <td>-</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
+    <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
+  </body>
+
 <script type="text/javascript">
   var total = 500;
   var engHire = false;
@@ -228,18 +358,6 @@ function updateCost()
     form.setAttribute("method", method);
     form.setAttribute("action", "/new");
 
-    //Presuming this comment is vestigial code? keeping it around for now just in case
-    // almost certaintly going to get deleted
-
-    /*  bandname = request.form['bandname']
-       capspec = request.form['capspec']
-       ensspec = request.form['ensspec']
-       capskill = request.form['capskill']
-       ensskill = request.form['ensskill']
-       capweap = request.form['capweap']
-       ensweap = request.form['ensweap']
-       troops = json.loads(request.form['troops']) */
-
      console.log(total)
 
      var remainingGold = document.createElement("input");
@@ -279,7 +397,6 @@ function updateCost()
                  {% endfor %}
 
                  console.log(capweap_array)
-                 console.log(capweap_array.prototype.toString)
 
      var capweap = document.createElement("input");
             capweap.setAttribute("type", "hidden");
@@ -304,11 +421,26 @@ function updateCost()
             ensskill.setAttribute("name", "ensskill");
             ensskill.setAttribute("value", document.getElementById('skillchoiceens').value);
             form.appendChild(ensskill);
+     var ensweap_array = []
+                {% for weap in weaps %}
+
+                  if(document.getElementById("{{weap}}_ens_check").checked)
+                  {
+                   var weapon = "{{weap}}"
+                   //sum += {{weaps[weap]}};
+                   ensweap_array.push(weapon)
+                  }
+
+                 {% endfor %}
+
+                 console.log(ensweap_array)
+
      var ensweap = document.createElement("input");
             ensweap.setAttribute("type", "hidden");
             ensweap.setAttribute("name", "ensweap");
-            ensweap.setAttribute("value", document.getElementById('ensweapsel').value);
+            ensweap.setAttribute("value", JSON.stringify(ensweap_array));
             form.appendChild(ensweap);
+
        }
 
      var troopsarr = []
@@ -329,133 +461,5 @@ function updateCost()
    }
 
   </script>
-  </head>
-  <body>
 
-    <h1>Warband</h1>
-    <h2>Warband Name:<input type="text" id="bandnametext" name="bandnametext"></h2>
-
-    <table border="0">
-      <tr>
-        <td><h3>Currency remaining: </h3></td>
-        <td id='remainingGold'>500</td>
-      </tr>
-    </table>
-    <table id="captainTable">
-      <tr>
-        <td>Move</td>
-        <td>Fight</td>
-        <td>Shoot</td>
-        <td>Shield</td>
-        <td>Morale</td>
-        <td>Health</td>
-        <td>Specialism</td>
-        <td>Weapons and Equipment</td>
-        <td>Skills</td>
-      </tr>
-      <tr>
-
-        <td>{{captain['Captain']['Move']}}</td>
-        <td>{{captain['Captain']['Fight']}}</td>
-        <td>{{captain['Captain']['Shoot']}}</td>
-        <td>{{captain['Captain']['Shield']}}</td>
-        <td>{{captain['Captain']['Morale']}}</td>
-        <td>{{captain['Captain']['Health']}}</td>
-
-        <td><select id="capspecsel" onchange="setCapSkillchoice(this)">
-          <option value="Empty">Select...</option>
-          {% for spec in specs %}
-
-          <option value="{{ spec }}">{{ spec }}</option>
-          {% endfor %}
-          </select></td>
-        <td>
-            {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td></td>
-      </tr>
-
-    </table>
-    Hire ensign? <input type="checkbox" name="appHire" id="ensHire" onClick="hireEng()">250gc<br>
-    <div id="ensignDiv" style='display: none'>
-      <table id="ensignTable">
-        <tr>
-          <td>Move</td>
-          <td>Fight</td>
-          <td>Shoot</td>
-          <td>Shield</td>
-          <td>Morale</td>
-          <td>Health</td>
-          <td>Specialism</td>
-          <td>Weapons and Equipment</td>
-          <td>Skills</td>
-        </tr>
-        <tr>
-          <td>{{ensign['Ensign']['Move']}}</td>
-          <td>{{ensign['Ensign']['Fight']}}</td>
-          <td>{{ensign['Ensign']['Shoot']}}</td>
-          <td>{{ensign['Ensign']['Shield']}}</td>
-          <td>{{ensign['Ensign']['Morale']}}</td>
-          <td>{{ensign['Ensign']['Health']}}</td>
-          <td>
-            <select id="ensskillsel" onchange="setEnsSkillchoice(this)">
-              <option value="Empty">Select...</option>
-              {% for spec in specs %}
-
-              <option value="{{ spec }}">{{ spec }}</option>
-              {% endfor %}
-            </select>
-          </td>
-        <td>
-            {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
-            {% endfor %}
-            </select>
-          </td>
-          <td></td>
-        </tr>
-
-      </table>
-    </div>
-    <table id='rosterTable'>
-      <tr>
-        <td>Class</td>
-        <td>Move</td>
-        <td>Fight</td>
-        <td>Shoot</td>
-        <td>Shield</td>
-        <td>Morale</td>
-        <td>Health</td>
-        <td>Cost</td>
-        <td>Notes</td>
-      </tr>
-      {% for i in range(1,9) %}
-      <tr>
-        <td>
-          <select id="troop{{i}}" onchange="updateTableRow({{ i }}, this)">
-            <option value="Empty">Empty</option>
-            {% for troop in people.keys() %}
-            <option value="{{ troop }}">{{ troop }}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>0</td>
-        <td>-</td>
-      </tr>
-      {% endfor %}
-    </table>
-    <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
-    <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
-  </body>
 </html>

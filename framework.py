@@ -67,6 +67,13 @@ def welcome_page():
 
 # attempts to figure out sum cost of warband
 def sumband(createdband):
+
+    # NOPE NOPE NOPE
+    # ABORT
+    # GOING TO NEED COMPLETELY REDOING
+
+    return 0
+
     total = 0;
 
     # cost for captain items
@@ -143,7 +150,6 @@ def new_warband():
         capspec = request.form['capspec']
         capskill = request.form['capskill']
         capweap = json.loads(request.form['capweap'])
-        print(capweap)
         troops = json.loads(request.form['troops'])
 
         # create dictionary to hold band details
@@ -160,24 +166,24 @@ def new_warband():
         for weapon in capweap:
             createdband['capweap'].append(weapon)
 
-        print(createdband['capweap'])
-
-
         # if ensign exists, put ensign dictionaries in band dictionary
         if 'hasensign' in request.form.keys():
 
             # pull dictionaries
             ensspec = request.form['ensspec']
             ensskill = request.form['ensskill']
-            ensweap = request.form['ensweap']
+            ensweap = json.loads(request.form['ensweap'])
 
             # place dictionaries
             createdband['Ensign'] = dict(app.ensign['Ensign'])
             createdband['Ensign']['Specialism'] = ensspec
             createdband['Ensign']['Skillset'].append(ensskill)
             createdband['Ensign']['Items'].append(ensweap)
+            createdband['ensweap'] = []
+            for weapon in capweap:
+                createdband['capweap'].append(weapon)
 
-        #warband name sanitization
+        # warband name sanitization
         cgi.escape(createdband['Name'])
 
         # create empty troop dictionary
@@ -194,16 +200,12 @@ def new_warband():
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
 
-
-
         # not enough money check
         if validate_band_cash_new(createdband) == False:
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
 
-
-
-        # define bands treasury
+        # define band treasury
         createdband['Treasury'] = int(request.form['remainingGold'])
 
         # store band details
@@ -220,8 +222,7 @@ def new_warband():
             os.mkdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
             bands = None
 
-        #return app.send_static_file('index.html'), httpcodes.CREATED
-
+        print(createdband)
         return render_template('bandlist.html', bands=bands), httpcodes.CREATED
 
 
@@ -256,6 +257,8 @@ def edit_given_warband(band):
         # pull captain stats
         bandname = request.form['bandname']
         capspec = request.form['capspec']
+        capweap = json.loads(request.form['capweap'])
+        print(capweap)
 
         skills = json.loads(request.form['capskill'])
         capweap = json.loads(request.form['capweap'])
@@ -282,6 +285,12 @@ def edit_given_warband(band):
         createdband['Captain']['Morale'] = captain_morale
         createdband['Captain']['Health'] = captain_health
         createdband['Captain']['Experience'] = captain_experience
+        createdband['capweap'] = []
+        for weapon in capweap:
+            createdband['capweap'].append(weapon)
+
+        print(createdband['capweap'])
+
 
         # if ensign exists, pull ensign stats
         if 'hasensign' in request.form.keys():

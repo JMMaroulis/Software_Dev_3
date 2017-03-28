@@ -1,0 +1,384 @@
+(dp0
+S'ensweap'
+p1
+(lp2
+VNeedle Gun
+p3
+asS'Troops'
+p4
+(lp5
+VCombat Droid
+p6
+aVAugment Gorilla
+p7
+asS'Ensign'
+p8
+(dp9
+S'Shoot'
+p10
+V-1
+p11
+sS'Shield'
+p12
+V10
+p13
+sS'Items'
+p14
+(lp15
+(lp16
+VNeedle Gun
+p17
+aa(lp18
+VNeedle Gun
+p19
+aa(lp20
+VNeedle Gun
+p21
+aa(lp22
+VNeedle Gun
+p23
+aa(lp24
+VNeedle Gun
+p25
+aa(lp26
+VNeedle Gun
+p27
+aa(lp28
+VNeedle Gun
+p29
+aa(lp30
+VNeedle Gun
+p31
+aa(lp32
+VNeedle Gun
+p33
+aa(lp34
+VNeedle Gun
+p35
+aa(lp36
+VNeedle Gun
+p37
+aa(lp38
+VNeedle Gun
+p39
+aa(lp40
+VNeedle Gun
+p41
+aa(lp42
+VNeedle Gun
+p43
+aa(lp44
+VNeedle Gun
+p45
+aa(lp46
+VNeedle Gun
+p47
+aa(lp48
+VNeedle Gun
+p49
+aa(lp50
+VNeedle Gun
+p51
+aa(lp52
+VNeedle Gun
+p53
+aa(lp54
+g3
+aasS'Move'
+p55
+V7
+p56
+sS'Experience'
+p57
+V0
+p58
+sS'Fight'
+p59
+V4
+p60
+sS'Morale'
+p61
+V2
+p62
+sS'Skillset'
+p63
+(lp64
+sS'Cost'
+p65
+I250
+sS'Health'
+p66
+V8
+p67
+sS'Specialism'
+p68
+VEngineering
+p69
+ssS'Treasury'
+p70
+I33
+sS'Captain'
+p71
+(dp72
+g10
+V8
+p73
+sg12
+V12
+p74
+sg14
+(lp75
+(lp76
+VBlaster
+p77
+aVCannon
+p78
+aVBlade
+p79
+aVNeedle Gun
+p80
+aa(lp81
+VBlaster
+p82
+aVCannon
+p83
+aVBlade
+p84
+aVNeedle Gun
+p85
+aa(lp86
+VBlaster
+p87
+aVCannon
+p88
+aVBlade
+p89
+aVNeedle Gun
+p90
+aa(lp91
+VBlaster
+p92
+aVCannon
+p93
+aVBlade
+p94
+aVNeedle Gun
+p95
+aa(lp96
+VBlaster
+p97
+aVCannon
+p98
+aVBlade
+p99
+aVNeedle Gun
+p100
+aa(lp101
+VBlaster
+p102
+aVCannon
+p103
+aVBlade
+p104
+aVNeedle Gun
+p105
+aa(lp106
+VBlaster
+p107
+aVCannon
+p108
+aVBlade
+p109
+aVNeedle Gun
+p110
+aa(lp111
+VBlaster
+p112
+aVCannon
+p113
+aVBlade
+p114
+aVNeedle Gun
+p115
+aa(lp116
+VBlaster
+p117
+aVCannon
+p118
+aVBlade
+p119
+aVNeedle Gun
+p120
+aa(lp121
+VBlaster
+p122
+aVCannon
+p123
+aVBlade
+p124
+aVNeedle Gun
+p125
+aa(lp126
+VBlaster
+p127
+aVCannon
+p128
+aVBlade
+p129
+aVNeedle Gun
+p130
+aa(lp131
+VBlaster
+p132
+aVCannon
+p133
+aVBlade
+p134
+aVNeedle Gun
+p135
+aa(lp136
+VBlaster
+p137
+aVCannon
+p138
+aVBlade
+p139
+aVNeedle Gun
+p140
+aa(lp141
+VBlaster
+p142
+aVCannon
+p143
+aVBlade
+p144
+aVNeedle Gun
+p145
+aa(lp146
+VBlaster
+p147
+aVCannon
+p148
+aVBlade
+p149
+aVNeedle Gun
+p150
+aa(lp151
+VBlaster
+p152
+aVCannon
+p153
+aVBlade
+p154
+aVNeedle Gun
+p155
+aa(lp156
+VBlaster
+p157
+aVCannon
+p158
+aVBlade
+p159
+aVNeedle Gun
+p160
+aa(lp161
+VBlaster
+p162
+aVCannon
+p163
+aVBlade
+p164
+aVNeedle Gun
+p165
+aa(lp166
+VBlaster
+p167
+aVCannon
+p168
+aVBlade
+p169
+aVNeedle Gun
+p170
+aa(lp171
+VBlaster
+p172
+aVCannon
+p173
+aVBlade
+p174
+aVNeedle Gun
+p175
+aasg55
+V5
+p176
+sg57
+V0
+p177
+sg59
+V8
+p178
+sg61
+V8
+p179
+sg63
+(lp180
+VBolster
+p181
+aVBolster
+p182
+aVBolster
+p183
+aVBolster
+p184
+aVBolster
+p185
+aVBolster
+p186
+aVBolster
+p187
+aVBolster
+p188
+aVBolster
+p189
+aVBolster
+p190
+aVBolster
+p191
+aVBolster
+p192
+aVBolster
+p193
+aVBolster
+p194
+aVBolster
+p195
+aVBolster
+p196
+aVBolster
+p197
+aVBolster
+p198
+aVBolster
+p199
+aVBolster
+p200
+asg65
+I0
+sg66
+V20
+p201
+sg68
+VPsychology
+p202
+ssS'capweap'
+p203
+(lp204
+g172
+ag173
+ag174
+ag175
+asS'Name'
+p205
+V465gp
+p206
+s.

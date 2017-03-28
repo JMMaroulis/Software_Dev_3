@@ -47,8 +47,7 @@ table, th, td { border: 1px solid black; text-align: left; }
           </select></td>
         <td>
             {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
+            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
             {% endfor %}
           </select>
         </td>
@@ -88,8 +87,7 @@ table, th, td { border: 1px solid black; text-align: left; }
           </td>
         <td>
             {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
+            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
             {% endfor %}
             </select>
           </td>
@@ -138,6 +136,11 @@ table, th, td { border: 1px solid black; text-align: left; }
 <script type="text/javascript">
   var total = 500;
   var engHire = false;
+  var skill_list = ["{{ skill_list|join("\",\"")|safe }}"];
+  console.log(skill_list);
+  var captain_skill_choice;
+  var ensign_skill_choice;
+
 
   // toggles ensign hire
   function hireEng()
@@ -160,6 +163,44 @@ table, th, td { border: 1px solid black; text-align: left; }
       updateCost();
     }
   }
+
+
+
+
+//occurs on skill change
+function updateSkills()
+{
+
+
+{% for skill in skill_list %}
+if(document.getElementById('{{skill}}'))
+{
+if(document.getElementById('{{skill}}').checked)
+{
+captain_skill_choice = "{{skill}}";
+}
+}
+
+if(document.getElementById('{{skill}}_ensign'))
+{
+if(document.getElementById('{{skill}}_ensign').checked)
+{
+ensign_skill_choice = "{{skill}}";
+}
+}
+
+{% endfor %}
+
+console.log(captain_skill_choice);
+console.log(ensign_skill_choice);
+
+
+}
+
+
+
+
+
 
 
   //occurs on troop change
@@ -197,6 +238,26 @@ table, th, td { border: 1px solid black; text-align: left; }
    }
    {% endfor %}
    updateCost();
+   }
+
+   function validate()
+   {
+    console.log('validating')
+   if(total < 0)
+   {
+   alert("Insufficient funds!")
+   return false
+   }
+
+   if((document.getElementById('bandnametext').value) == "")
+   {
+   alert("Please name your Warband!")
+   return false
+
+   }
+
+    return true
+
    }
 
 
@@ -273,9 +334,10 @@ function updateCost()
         var tempbutton = document.createElement("input");
 
          tempbutton.setAttribute("type", "radio");
-         tempbutton.setAttribute("id", "skillchoice");
-         tempbutton.setAttribute("name", "skillchoice");
+         tempbutton.setAttribute("id", "{{element}}");
+         tempbutton.setAttribute("name", "{{element}}");
          tempbutton.setAttribute("value", "{{element}}");
+         tempbutton.setAttribute("onclick", "updateSkills()");
 
          var templabel = document.createElement("label");
 
@@ -320,9 +382,11 @@ function updateCost()
                var tempbutton = document.createElement("input");
 
                tempbutton.setAttribute("type", "radio");
-               tempbutton.setAttribute("id", "skillchoiceens");
-               tempbutton.setAttribute("name", "skillchoiceens");
+               tempbutton.setAttribute("id", "{{element}}" + "_ensign");
+               tempbutton.setAttribute("name", "{{element}}" + "_ensign");
                tempbutton.setAttribute("value", "{{element}}");
+               tempbutton.setAttribute("onclick", "updateSkills()");
+
 
                var templabel = document.createElement("label");
 
@@ -354,6 +418,14 @@ function updateCost()
      // Set method to post by default if not specified.
      method =  "post";
 
+      //band validation
+      if(!(validate()))
+      {
+      return
+      }
+
+
+
     var form = document.createElement("form");
     form.setAttribute("method", method);
     form.setAttribute("action", "/new");
@@ -380,7 +452,7 @@ function updateCost()
      var capskill = document.createElement("input");
             capskill.setAttribute("type", "hidden");
             capskill.setAttribute("name", "capskill");
-            capskill.setAttribute("value", document.getElementById('skillchoice').value);
+            capskill.setAttribute("value", captain_skill_choice);
             form.appendChild(capskill);
 
      var capweap_array = []
@@ -419,7 +491,7 @@ function updateCost()
      var ensskill = document.createElement("input");
             ensskill.setAttribute("type", "hidden");
             ensskill.setAttribute("name", "ensskill");
-            ensskill.setAttribute("value", document.getElementById('skillchoiceens').value);
+            ensskill.setAttribute("value", ensign_skill_choice);
             form.appendChild(ensskill);
      var ensweap_array = []
                 {% for weap in weaps %}

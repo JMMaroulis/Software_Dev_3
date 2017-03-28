@@ -1,0 +1,425 @@
+(dp0
+S'ensweap'
+p1
+(lp2
+VNeedle Gun
+p3
+aVWhip
+p4
+asS'Troops'
+p5
+(lp6
+sS'Ensign'
+p7
+(dp8
+S'Shoot'
+p9
+I-1
+sS'Shield'
+p10
+I10
+sS'Items'
+p11
+(lp12
+(lp13
+VNeedle Gun
+p14
+aa(lp15
+VNeedle Gun
+p16
+aa(lp17
+VNeedle Gun
+p18
+aa(lp19
+VNeedle Gun
+p20
+aa(lp21
+VNeedle Gun
+p22
+aa(lp23
+VNeedle Gun
+p24
+aa(lp25
+VNeedle Gun
+p26
+aa(lp27
+VNeedle Gun
+p28
+aa(lp29
+VNeedle Gun
+p30
+aa(lp31
+VNeedle Gun
+p32
+aa(lp33
+VNeedle Gun
+p34
+aa(lp35
+VNeedle Gun
+p36
+aa(lp37
+VNeedle Gun
+p38
+aa(lp39
+VNeedle Gun
+p40
+aa(lp41
+VNeedle Gun
+p42
+aa(lp43
+VNeedle Gun
+p44
+aa(lp45
+VNeedle Gun
+p46
+aa(lp47
+VNeedle Gun
+p48
+aa(lp49
+VNeedle Gun
+p50
+aa(lp51
+VNeedle Gun
+p52
+aa(lp53
+VNeedle Gun
+p54
+aa(lp55
+VNeedle Gun
+p56
+aasS'Move'
+p57
+I7
+sS'Experience'
+p58
+I0
+sS'Fight'
+p59
+I0
+sS'Morale'
+p60
+I2
+sS'Skillset'
+p61
+(lp62
+VSquad
+p63
+aVAim
+p64
+asS'Cost'
+p65
+I250
+sS'Health'
+p66
+I8
+sS'Specialism'
+p67
+VMarksman
+p68
+ssS'Treasury'
+p69
+I208
+sS'Captain'
+p70
+(dp71
+g9
+I2
+sg10
+I12
+sg11
+(lp72
+(lp73
+VBlaster
+p74
+aVCannon
+p75
+aVBlade
+p76
+aVNeedle Gun
+p77
+aa(lp78
+VBlaster
+p79
+aVCannon
+p80
+aVBlade
+p81
+aVNeedle Gun
+p82
+aa(lp83
+VBlaster
+p84
+aVCannon
+p85
+aVBlade
+p86
+aVNeedle Gun
+p87
+aa(lp88
+VBlaster
+p89
+aVCannon
+p90
+aVBlade
+p91
+aVNeedle Gun
+p92
+aa(lp93
+VBlaster
+p94
+aVCannon
+p95
+aVBlade
+p96
+aVNeedle Gun
+p97
+aa(lp98
+VBlaster
+p99
+aVCannon
+p100
+aVBlade
+p101
+aVNeedle Gun
+p102
+aa(lp103
+VBlaster
+p104
+aVCannon
+p105
+aVBlade
+p106
+aVNeedle Gun
+p107
+aa(lp108
+VBlaster
+p109
+aVCannon
+p110
+aVBlade
+p111
+aVNeedle Gun
+p112
+aa(lp113
+VBlaster
+p114
+aVCannon
+p115
+aVBlade
+p116
+aVNeedle Gun
+p117
+aa(lp118
+VBlaster
+p119
+aVCannon
+p120
+aVBlade
+p121
+aVNeedle Gun
+p122
+aa(lp123
+VBlaster
+p124
+aVCannon
+p125
+aVBlade
+p126
+aVNeedle Gun
+p127
+aa(lp128
+VBlaster
+p129
+aVCannon
+p130
+aVBlade
+p131
+aVNeedle Gun
+p132
+aa(lp133
+VBlaster
+p134
+aVCannon
+p135
+aVBlade
+p136
+aVNeedle Gun
+p137
+aa(lp138
+VBlaster
+p139
+aVCannon
+p140
+aVBlade
+p141
+aVNeedle Gun
+p142
+aa(lp143
+VBlaster
+p144
+aVCannon
+p145
+aVBlade
+p146
+aVNeedle Gun
+p147
+aa(lp148
+VBlaster
+p149
+aVCannon
+p150
+aVBlade
+p151
+aVNeedle Gun
+p152
+aa(lp153
+VBlaster
+p154
+aVCannon
+p155
+aVBlade
+p156
+aVNeedle Gun
+p157
+aa(lp158
+VBlaster
+p159
+aVCannon
+p160
+aVBlade
+p161
+aVNeedle Gun
+p162
+aa(lp163
+VBlaster
+p164
+aVCannon
+p165
+aVBlade
+p166
+aVNeedle Gun
+p167
+aa(lp168
+VBlaster
+p169
+aVCannon
+p170
+aVBlade
+p171
+aVNeedle Gun
+p172
+aa(lp173
+VBlaster
+p174
+aVCannon
+p175
+aVBlade
+p176
+aVNeedle Gun
+p177
+aa(lp178
+VBlaster
+p179
+aVCannon
+p180
+aVBlade
+p181
+aVNeedle Gun
+p182
+aasg57
+I5
+sg58
+I0
+sg59
+I2
+sg60
+I4
+sg61
+(lp183
+VBolster
+p184
+aVBolster
+p185
+aVBolster
+p186
+aVBolster
+p187
+aVBolster
+p188
+aVBolster
+p189
+aVBolster
+p190
+aVBolster
+p191
+aVBolster
+p192
+aVBolster
+p193
+aVBolster
+p194
+aVBolster
+p195
+aVBolster
+p196
+aVBolster
+p197
+aVBolster
+p198
+aVBolster
+p199
+aVBolster
+p200
+aVBolster
+p201
+aVBolster
+p202
+aVBolster
+p203
+aVBolster
+p204
+aVBolster
+p205
+aVAim
+p206
+aVSquad
+p207
+aVSquad
+p208
+aVBlock
+p209
+aVRepair
+p210
+aVSquad
+p211
+aVAim
+p212
+aVRepair
+p213
+aVAim
+p214
+aVBolster
+p215
+aVAim
+p216
+asg65
+I0
+sg66
+I12
+sg67
+VMarksman
+p217
+ssS'capweap'
+p218
+(lp219
+VBlaster
+p220
+aVCannon
+p221
+aVWhip
+p222
+asS'Name'
+p223
+V125 45
+p224
+s.

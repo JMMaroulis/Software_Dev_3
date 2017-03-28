@@ -49,6 +49,10 @@ app.skillsets = {'Engineering': ['Repair', 'Sabotage', 'Augment'], 'Psychology':
                  'Marksman': ['Aim', 'Pierce', 'Reload'], 'Tactics': ['Squad', 'Ambush', 'Surround'],
                  'Melee': ['Block', 'Risposte', 'Dual'], 'Defence': ['Shield', 'Sacrifice', 'Resolute']}
 
+app.skill_list = ['Repair', 'Sabotage', 'Augment',  'Bolster', 'Terror', 'Counter',
+                  'Aim', 'Pierce', 'Reload', 'Squad', 'Ambush', 'Surround',
+                  'Block', 'Risposte', 'Dual', 'Shield', 'Sacrifice', 'Resolute']
+
 # available items list
 app.weapon = {'Blaster': 5, 'Needle Gun': 12, 'Blade': 3, 'Cannon': 15, 'Whip': 5}
 
@@ -141,7 +145,7 @@ def new_warband():
 
     if request.method == 'GET':
         return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
-                               specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.OK
+                               specs=app.specialisms, skills=app.skillsets, weaps=app.weapon, skill_list=app.skill_list), httpcodes.OK
     #
     if request.method == 'POST':
 
@@ -178,10 +182,9 @@ def new_warband():
             createdband['Ensign'] = dict(app.ensign['Ensign'])
             createdband['Ensign']['Specialism'] = ensspec
             createdband['Ensign']['Skillset'].append(ensskill)
-            createdband['Ensign']['Items'].append(ensweap)
             createdband['ensweap'] = []
-            for weapon in capweap:
-                createdband['capweap'].append(weapon)
+            for weapon in ensweap:
+                createdband['ensweap'].append(weapon)
 
         # warband name sanitization
         cgi.escape(createdband['Name'])
@@ -222,7 +225,6 @@ def new_warband():
             os.mkdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
             bands = None
 
-        print(createdband)
         return render_template('bandlist.html', bands=bands), httpcodes.CREATED
 
 
@@ -247,7 +249,6 @@ def edit_given_warband(band):
         open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), band), "rb"))
 
     if request.method == 'GET':
-        print(loadedband)
         return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                weaps=app.weapon, capweaps=loadedband['capweap']), httpcodes.OK
@@ -258,7 +259,6 @@ def edit_given_warband(band):
         bandname = request.form['bandname']
         capspec = request.form['capspec']
         capweap = json.loads(request.form['capweap'])
-        print(capweap)
 
         skills = json.loads(request.form['capskill'])
         capweap = json.loads(request.form['capweap'])
@@ -289,14 +289,18 @@ def edit_given_warband(band):
         for weapon in capweap:
             createdband['capweap'].append(weapon)
 
-        print(createdband['capweap'])
 
 
         # if ensign exists, pull ensign stats
         if 'hasensign' in request.form.keys():
+
+
             ensspec = request.form['ensspec']
             #ensskill = request.form['ensskill']
-            ensign_skill = json.loads(request.form['ensign_skill'])
+            #DOES NOT CURRENTLY EXIST
+            #HIGH PRIORITY FIX
+            #ensign_skill = json.loads(request.form['ensign_skill'])
+            ensign_skill = []
             ensign_move = request.form['ensmove']
             ensign_fight = request.form['ensfight']
             ensign_shoot = request.form['ensshoot']
@@ -304,7 +308,8 @@ def edit_given_warband(band):
             ensign_morale = request.form['ensmorale']
             ensign_health = request.form['enshealth']
             ensign_experience = request.form['ensexperience']
-            ensweap = request.form['ensweap']
+            ensweap = json.loads(request.form['ensweap'])
+
             createdband['Ensign'] = dict(app.ensign['Ensign'])
             createdband['Ensign']['Specialism'] = ensspec
             createdband['Ensign']['Skillset'].extend(ensign_skill)
@@ -316,6 +321,10 @@ def edit_given_warband(band):
             createdband['Ensign']['Morale'] = ensign_morale
             createdband['Ensign']['Health'] = ensign_health
             createdband['Ensign']['Experience'] = ensign_experience
+            createdband['ensweap'] = []
+            for weapon in ensweap:
+                createdband['ensweap'].append(weapon)
+
 
         #warband name sanitization
         cgi.escape(createdband['Name'])
@@ -328,23 +337,23 @@ def edit_given_warband(band):
             if troop != "Empty":
                 createdband['Troops'].append(troop)
 
-        # render blank band if too many troops?
-        # sounds like a bug to me
-
         # troop number validation
         if not validate_band_troops(createdband):
+            print('troop valid fail')
             return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                    weaps=app.weapon), httpcodes.BADREQUEST
 
         # warband cash validation
         if not validate_band_cash_edit(loadedband, createdband):
+            print('cash valid fail')
             return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                    weaps=app.weapon), httpcodes.BADREQUEST
 
         # warband name validation
         if not validate_band_name(createdband):
+            print('name valid fail')
             return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                    ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                    weaps=app.weapon), httpcodes.BADREQUEST

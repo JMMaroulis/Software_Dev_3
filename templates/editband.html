@@ -15,6 +15,8 @@
       <tr>
         <td><h3>Currency remaining: </h3></td>
         <td id='remainingGold'>{{ band['Treasury'] }}</td>
+        <td><h3>Add Currency:</h3></td>
+        <td><input id="add_currency" type="number" value="0" onclick="updateCost()"></td>
       </tr>
     </table>
     <table id="captainTable">
@@ -32,12 +34,12 @@
       </tr>
       <tr>
 
-        <td><input id="capmov" type="number" value="{{band['Captain']['Move']}}"></td>
-        <td><input id="capfig" type="number" value="{{band['Captain']['Fight']}}"></td>
-        <td><input id="capsho" type="number" value="{{band['Captain']['Shoot']}}"></td>
-        <td><input id="capshi" type="number" value="{{band['Captain']['Shield']}}"></td>
-        <td><input id="capmor" type="number" value="{{band['Captain']['Morale']}}"></td>
-        <td><input id="caphea" type="number" value="{{band['Captain']['Health']}}"></td>
+        <td>5</td>
+        <td><input id="capfig" type="number" max="8"  value="{{band['Captain']['Fight']}}"></td>
+        <td><input id="capsho" type="number" max="8"  value="{{band['Captain']['Shoot']}}"></td>
+        <td>12</td>
+        <td><input id="capmor" type="number" max="8"  value="{{band['Captain']['Morale']}}"></td>
+        <td><input id="caphea" type="number" max="20" value="{{band['Captain']['Health']}}"></td>
 
         <td><select id="capspecsel" onchange="setCapSkillchoice(this)" disabled>
           <option value="Empty">Select...</option>
@@ -51,8 +53,7 @@
           </select></td>
         <td>
             {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
+            <input type="checkbox" id="{{weap}}_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
             {% endfor %}
           </select>
         </td>
@@ -68,21 +69,25 @@
         <td><input id="capexp" type="number" value="{{band['Captain']['Experience']}}"/></td>
       </tr>
 
+
+
+
+
+
+
+
+
     </table>
-    Hire ensign? <input type="checkbox" name="ensign_hire" id="ensign_hire" onClick="hireEng()" {% if 'Ensign' in band.keys() %} checked {%endif%}>250gc<br>
+    Hire ensign? <input type="checkbox" name="ensign_hire" id="ensign_hire" onClick="toggle_ensign()" {% if 'Ensign' in band.keys() %} checked {%endif%}>250gc<br>
 
 
+  {% if 'Ensign' in band.keys() %}
+  <div id="ensignDiv" style='display: block'>
 
+  {%else%}
+  <div id="ensignDiv" style='display: none'>
+  {%endif%}
 
-
-
-
-    {% if 'Ensign' in band.keys() %}
-    <div id="ensignDiv" style='display: block'>
-
-      {%else%}
-      <div id="ensignDiv" style='display: block'>
-        {%endif%}
         <table id="ensignTable">
           <tr>
             <td>Move</td>
@@ -100,12 +105,12 @@
           {% if 'Ensign' in band.keys() %}
           <tr>
 
-            <td><input id="enmov" type="number" value="{{band['Ensign']['Move']}}"></td>
-            <td><input id="enfig" type="number" value="{{band['Ensign']['Fight']}}"></td>
-            <td><input id="ensho" type="number" value="{{band['Ensign']['Shoot']}}"></td>
-            <td><input id="enshi" type="number" value="{{band['Ensign']['Shield']}}"></td>
-            <td><input id="enmor" type="number" value="{{band['Ensign']['Morale']}}"></td>
-            <td><input id="enhea" type="number" value="{{band['Ensign']['Health']}}"></td>
+            <td>7</td>
+            <td><input id="enfig" type="number" max="6" value="{{band['Ensign']['Fight']}}"></td>
+            <td><input id="ensho" type="number" max="6"value="{{band['Ensign']['Shoot']}}"></td>
+            <td>10</td>
+            <td><input id="enmor" type="number" max="4" value="{{band['Ensign']['Morale']}}"></td>
+            <td><input id="enhea" type="number" max="16" value="{{band['Ensign']['Health']}}"></td>
             <td><select id="ensskillsel" onchange="setEnsSkillchoice(this)" disabled>
               <option value="Empty">Select...</option>
               {% for spec in specs %}
@@ -118,13 +123,14 @@
               {% endfor %}
             </select>
             </td>
-            <td>
+
+        <td>
             {% for weap in weaps %}
-            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()">
-            <option value="{{ weap }}">{{ weap }}</option>
+            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()" balue="{{weap}}">{{weap}}<br>
             {% endfor %}
             </select>
-            </td>
+          </td>
+
             <td>
               {% for opt in skills[band['Ensign']['Specialism']] %}
               {% if opt in band['Ensign']['Skillset'] %}
@@ -157,9 +163,17 @@
                 {% endif %}
                 {% endfor %}
               </select>
+
+                      <td>
+            {% for weap in weaps %}
+            <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
+            {% endfor %}
+            </select>
+          </td>
+
             </td>
             <td></td>
-            <td><input id="capexp" type="number" value="{{ensign['Ensign']['Experience']}}"/></td>
+            <td><input id="ensexp" type="number" value="{{ensign['Ensign']['Experience']}}"/></td>
 
           </tr>
 
@@ -242,6 +256,11 @@
     <script type="text/javascript">
       var total = {{ band['Treasury'] }};
 
+      var captain_skill = {{ band['Captain']['Skillset'] }};
+      var ensign_skill = {{ band['Ensign']['Skillset'] }};
+      console.log(captain_skill);
+      console.log(ensign_skill);
+
 
       {% if 'Ensign' in band.keys():  %}
       var engHire = true;
@@ -251,28 +270,54 @@
        var hadEnsign = false;
       {% endif %}
 
+      toggle_ensign()
+
+          function toggle_ensign()
+    {
+        //if ensign exists
+        if(document.getElementById('ensign_hire').checked)
+        {
+        engHire = true
+        document.getElementById('ensignDiv').style='display: block'
+        }
+
+
+        //if ensign does not exist
+        if(document.getElementById('ensign_hire').checked == false)
+        {
+        engHire = false
+        document.getElementById('ensignDiv').style='display: none'
+        }
+
+        updateCost()
+
+    }
+
+
+
       //get captains weaponry, fill checkboxes accordingly
       captain_weapons = ["{{ band['capweap']|join("\",\"")|safe }}"]
       for (i=0; i<captain_weapons.length; i++)
       {
         weapon = captain_weapons[i];
 
-        if(document.getElementById(weapon + "_check"))
+        if(document.getElementById(weapon + "_check").checked !== null)
         {
           document.getElementById(weapon + "_check").checked = true;
         }
       }
 
+
       //get ensign weaponry, fill checkboxes accordingly
-      if(engHire = true)
+      if(engHire == true)
       {
         ensign_weapons = ["{{ band['ensweap']|join("\",\"")|safe }}"]
-        console.log(ensign_weapons);
         for (i=0; i<ensign_weapons.length; i++)
         {
+
           weapon = ensign_weapons[i];
 
-          if(document.getElementById(weapon + "_ens_check"));
+          if(document.getElementById(weapon + "_ens_check"))
           {
             document.getElementById(weapon + "_ens_check").checked = true;
 
@@ -281,45 +326,24 @@
       }
 
 
-      console.log(total)
-      updateCost();
-      console.log(total)
-
-    function toggle_show_ensign()
-    {
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
-
     function hireEng()
        {
-         //show ensign, take cost from total
-         if(document.getElementById(ensign_hire).checked)
+         //show ensign
+         if(document.getElementById('ensign_hire').checked)
          {
            engHire = true;
            document.getElementById("ensignDiv").style.display = "block";
-           total = total - 250;
            updateCost();
          }
-         //don't show ensign, DON'T refund ensign costs
+         //don't show ensign
          else
          {
            engHire = false;
-           document.getElementById("ensignDiv").style.display = "block";
+           document.getElementById("ensignDiv").style.display = "hidden";
            updateCost();
          }
        }
+
 
 
    //occurs on troop change
@@ -342,9 +366,6 @@
        myTable.rows[row].cells[8].innerHTML = '-';
      }
 
-
-
-
      //if troop hired
      {% for troop in people.keys() %}
      if(sel == "{{troop}}")
@@ -357,7 +378,6 @@
        myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
        myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
        myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
-      total = total - {{ people[troop]['Cost'] }}
 
      }
      {% endfor %}
@@ -365,61 +385,99 @@
      }
 
 
+       updateCost()
 
 
    function updateCost()
    {
-     var sum = 0;
-     var myTable = document.getElementById('rosterTable');
 
-       //initial weapons loadout
-       initial_weapons = ["{{ band['capweap']|join("\",\"")|safe }}"]
-       initial_ens_weapons = ["{{ band['ensweap']|join("\",\"")|safe }}"]
+   console.log('STARTING UPDATECOST');
+     var sum = 0;
+     var myTable = ["{{ people|join("\",\"")|safe }}"]
+
+        //ensign hire cost
+        //most cases do nothing; here to test various refund mechanisms
+
+        if(engHire && hadEnsign)
+        {}
+
+        if(engHire && !(hadEnsign))
+        {
+         sum += 250;
+        }
+
+        if(!(engHire) && hadEnsign)
+        {}
+
+        if(!(engHire) && !(hadEnsign))
+        {}
+
+        //troop cost
+
+          //sum up cost of 8 troops
+          for(i = 1; i <= 8; i++)
+          {
+            sum += parseInt(rosterTable.rows[i].cells[7].innerHTML);
+          }
+
+
+           //apparently the whole people=app.troops thing REFUSES TO OBEY ITS MASTER
+           //so here's a new dictionary one can actually [expletive] access
+           //I'm fully aware that it's bad practice, and at this point I really don't care
+           troop_costs = {'Augment Gorilla': 20, 'Lackey': 20, 'Security':  80, 'Engineer':60, 'Medic': 50, 'Commando':  100, 'Combat Droid': 150,}
+
+
+          //sum up cost of initial troops (avoid double counting)
+          initial_troops = ["{{ band['Troops']|join("\",\"")|safe }}"];
+          if(initial_troops[0] !== "")
+          {
+          for(i=0; i<initial_troops.length; i++)
+          {
+          troop = initial_troops[i]
+          sum -= troop_costs[troop]
+          }
+          }
 
         //sum up item costs
+
+        //initial weapons loadout
+        initial_weapons = ["{{ band['capweap']|join("\",\"")|safe }}"]
+        initial_ens_weapons = ["{{ band['ensweap']|join("\",\"")|safe }}"]
+
         {% for weap in weaps %}
         {
-
 
           //subtract if currently possessed by captain
           if(document.getElementById("{{weap}}_check").checked)
           {
-          console.log('has {{weap}}');
-           sum += {{weaps[weap]}};
+          sum += {{weaps[weap]}};
           }
-
-
 
           //add if initially possessed by captain (avoids double-counting)
           if(initial_weapons.indexOf("{{weap}}") >= 0)
           {
-          console.log('started with {{weap}}');
-           sum -= {{weaps[weap]}};
-           }
-
-
-
-           //add if initially posses by ensign (avoids double-counting)
-           if(initial_ens_weapons.indexOf("{{weap}}") >= 0)
-           {
-            console.log('started with {{weap}}');
-            sum -= {{weaps[weap]}};
-           }
+          sum -= {{weaps[weap]}};
+          }
 
 
           //subtract if currently possessed by ensign
-          if(document.getElementById("{{weap}}_ens_check").checked);
+          if(document.getElementById("{{weap}}_ens_check").checked)
           {
            sum += {{weaps[weap]}};
           }
 
+          //add if initially posses by ensign (avoids double-counting)
+          if(initial_ens_weapons.indexOf("{{weap}}") >= 0)
+          {
+          sum -= {{weaps[weap]}};
+          }
+
         }
-        console.log(sum);
 
         {% endfor %}
 
 
-    total = {{band['Treasury']}} - sum;
+    total = {{band['Treasury']}} - sum + parseInt(document.getElementById('add_currency').value);
     remainingGold.innerHTML = total;
 
     console.log(sum);
@@ -517,10 +575,37 @@
 
 
 
+   function validate()
+   {
+
+   if(total < 0)
+   {
+   alert("Insufficient funds!")
+   return false
+   }
+
+   if((document.getElementById('bandnametext').value) == "")
+   {
+   alert("Please name your Warband!")
+   return false
+
+   }
+
+    return true
+
+   }
+
 
    function doFormSubmit(total)
    {
      method =  "post"; // Set method to post by default if not specified.
+
+      //band validation
+      if(!(validate()))
+      {
+      return
+      }
+
 
      var form = document.createElement("form");
      form.setAttribute("method", method);
@@ -548,7 +633,7 @@
      var capmove = document.createElement("input");
      capmove.setAttribute("type", "hidden");
      capmove.setAttribute("name", "capmove");
-     capmove.setAttribute("value", document.getElementById('capmov').value);
+     capmove.setAttribute("value", 5);
      form.appendChild(capmove);
      var capfight = document.createElement("input");
      capfight.setAttribute("type", "hidden");
@@ -563,7 +648,7 @@
      var capshield = document.createElement("input");
      capshield.setAttribute("type", "hidden");
      capshield.setAttribute("name", "capshield");
-     capshield.setAttribute("value", document.getElementById('capshi').value);
+     capshield.setAttribute("value", 12);
      form.appendChild(capshield);
      var capmorale = document.createElement("input");
      capmorale.setAttribute("type", "hidden");
@@ -632,10 +717,13 @@
        form.appendChild(ensspec);
 
        //start
+
+       if(hadEnsign){
+
        var enmove = document.createElement("input");
        enmove.setAttribute("type", "hidden");
        enmove.setAttribute("name", "ensmove");
-       enmove.setAttribute("value", document.getElementById('enmov').value);
+       enmove.setAttribute("value", 7);
        form.appendChild(enmove);
        var enfight = document.createElement("input");
        enfight.setAttribute("type", "hidden");
@@ -650,7 +738,7 @@
        var enshield = document.createElement("input");
        enshield.setAttribute("type", "hidden");
        enshield.setAttribute("name", "ensshield");
-       enshield.setAttribute("value", document.getElementById('enshi').value);
+       enshield.setAttribute("value", 10);
        form.appendChild(enshield);
        var enmorale = document.createElement("input");
        enmorale.setAttribute("type", "hidden");
@@ -667,6 +755,45 @@
        enexperience.setAttribute("name", "ensexperience");
        enexperience.setAttribute("value", document.getElementById('enexp').value);
        form.appendChild(enexperience);
+       }
+       else
+       {
+       var enmove = document.createElement("input");
+       enmove.setAttribute("type", "hidden");
+       enmove.setAttribute("name", "ensmove");
+       enmove.setAttribute("value", 7);
+       form.appendChild(enmove);
+       var enfight = document.createElement("input");
+       enfight.setAttribute("type", "hidden");
+       enfight.setAttribute("name", "ensfight");
+       enfight.setAttribute("value", 0);
+       form.appendChild(enfight);
+       var enshoot = document.createElement("input");
+       enshoot.setAttribute("type", "hidden");
+       enshoot.setAttribute("name", "ensshoot");
+       enshoot.setAttribute("value", -1);
+       form.appendChild(enshoot);
+       var enshield = document.createElement("input");
+       enshield.setAttribute("type", "hidden");
+       enshield.setAttribute("name", "ensshield");
+       enshield.setAttribute("value", 10);
+       form.appendChild(enshield);
+       var enmorale = document.createElement("input");
+       enmorale.setAttribute("type", "hidden");
+       enmorale.setAttribute("name", "ensmorale");
+       enmorale.setAttribute("value", 2);
+       form.appendChild(enmorale);
+       var enhealth = document.createElement("input");
+       enhealth.setAttribute("type", "hidden");
+       enhealth.setAttribute("name", "enshealth");
+       enhealth.setAttribute("value", 8);
+       form.appendChild(enhealth);
+       var enexperience = document.createElement("input");
+       enexperience.setAttribute("type", "hidden");
+       enexperience.setAttribute("name", "ensexperience");
+       enexperience.setAttribute("value", 0);
+       form.appendChild(enexperience);
+       }
        //end
        if (hadEnsign)
        {
@@ -686,20 +813,28 @@
          ensskill.setAttribute("value", JSON.stringify(ensskills));
          form.appendChild(ensskill);
        }
-       else
-       {
-         var ensskill = document.createElement("input");
-         ensskill.setAttribute("type", "hidden");
-         ensskill.setAttribute("name", "ensskill");
-         ensskill.setAttribute("value", document.getElementById('skillchoiceens').value);
-         form.appendChild(ensskill);
-       }
 
-       var ensweap = document.createElement("input");
-       ensweap.setAttribute("type", "hidden");
-       ensweap.setAttribute("name", "ensweap");
-       ensweap.setAttribute("value", 0);
-       form.appendChild(ensweap);
+
+     var ensweap_array = []
+    {% for weap in weaps %}
+
+      if(document.getElementById("{{weap}}_ens_check").checked)
+      {
+       var weapon = "{{weap}}"
+       ensweap_array.push(weapon)
+      }
+
+
+     {% endfor %}
+
+     console.log(ensweap_array)
+
+     var ensweap = document.createElement("input");
+     ensweap.setAttribute("type", "hidden");
+     ensweap.setAttribute("name", "ensweap");
+     ensweap.setAttribute("value", JSON.stringify(ensweap_array));
+     form.appendChild(ensweap);
+
 
      }
 

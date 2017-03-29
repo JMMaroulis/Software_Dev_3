@@ -8,12 +8,12 @@ table, th, td { border: 1px solid black; text-align: left; }
 </head>
 <body>
 <h1>Bands</h1>
+<tr><td></td><td><button onclick="window.location.href='/'">Main Menu</button></td></tr>
 <table>
 {% for band in bands %}
 <tr><td><a href="/edit/{{band}}">{{band}}</a></td><td><a href="/delete/{{band}}">Delete</a></td></tr>
 {% endfor %}
 </table>
-
 </form>
 </body>
 </html>

@@ -72,16 +72,10 @@ def welcome_page():
 # attempts to figure out sum cost of warband
 def sumband(createdband):
 
-    # NOPE NOPE NOPE
-    # ABORT
-    # GOING TO NEED COMPLETELY REDOING
-
-    return 0
-
-    total = 0;
+    total = 0
 
     # cost for captain items
-    for item in createdband['Captain']['Items']:
+    for item in createdband['capweap']:
         total = total + app.cost[item]
 
     # cost for hiring ensign
@@ -89,19 +83,21 @@ def sumband(createdband):
         total = total + 250
 
         # cost for ensign items
-        for item in createdband['Ensign']['Items']:
+        for item in createdband['ensweap']:
             total = total + app.cost[item]
 
     # cost for hired troops
     for troop in createdband['Troops']:
         total = total + app.troops[troop]['Cost']
 
+    print(total)
     return total
 
 
 # cash validation for new band
 def validate_band_cash_new(createdband):
-    cash = int(request.form['remainingGold'])
+    cash = sumband(createdband)
+    #cash = int(request.form['remainingGold'])
     if cash < 0:
         return False
     elif cash >= 0:
@@ -109,14 +105,13 @@ def validate_band_cash_new(createdband):
 
 
 # cash validation for band edit
-# NOT CURRENTLY FULLY FUNCTIONAL
-# REQUIRES METHOD OF GIVING BANDS MORE MONEY TO TURN INTO ADDED_CASH VARIABLE
+# NOT CURRENTLY FUNCTIONAL
 def validate_band_cash_edit(loadedband, createdband):
 
-    #placeholder value
-    added_cash = 0
+    return True
 
-    cash = 500 + added_cash - sumband(createdband)
+    #it doesn't like calling this, and I'm not sure why
+    #cash = createdband['Treasury']
     if cash < 0:
         return False
     elif cash >= 0:
@@ -143,13 +138,15 @@ def validate_band_name(createdband):
 @app.route('/new', methods=['GET', 'POST'])
 def new_warband():
 
+    # give client new band template
     if request.method == 'GET':
         return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                specs=app.specialisms, skills=app.skillsets, weaps=app.weapon, skill_list=app.skill_list), httpcodes.OK
-    #
+
+    # take new band flask form from client
     if request.method == 'POST':
 
-        # pull various flask forms
+        # pull various details from form
         bandname = request.form['bandname']
         capspec = request.form['capspec']
         capskill = request.form['capskill']
@@ -159,26 +156,28 @@ def new_warband():
         # create dictionary to hold band details
         createdband = dict()
 
-        # put captain dictionaries in band dictionary
+        # define band treasury
+        createdband['Treasury'] = int(request.form['remainingGold'])
+
+        # put captain details in band dictionary
         createdband['Name'] = bandname
         createdband['Captain'] = dict(app.captain['Captain'])
         createdband['Captain']['Specialism'] = capspec
         createdband['Captain']['Skillset'].append(capskill)
-        # createdband['Captain']['Items'].append(capweap)
-
         createdband['capweap'] = []
         for weapon in capweap:
             createdband['capweap'].append(weapon)
 
-        # if ensign exists, put ensign dictionaries in band dictionary
+        # if ensign exists, put ensign details in band dictionary
         if 'hasensign' in request.form.keys():
 
-            # pull dictionaries
+            # pull details from form
             ensspec = request.form['ensspec']
             ensskill = request.form['ensskill']
+            print(ensskill)
             ensweap = json.loads(request.form['ensweap'])
 
-            # place dictionaries
+            # put details in band dictionary
             createdband['Ensign'] = dict(app.ensign['Ensign'])
             createdband['Ensign']['Specialism'] = ensspec
             createdband['Ensign']['Skillset'].append(ensskill)
@@ -189,10 +188,8 @@ def new_warband():
         # warband name sanitization
         cgi.escape(createdband['Name'])
 
-        # create empty troop dictionary
+        # create troop list, populate with troops
         createdband['Troops'] = []
-
-        # populate troop dictionary with troops
         for item in troops:
             if item != "Empty":
                 createdband['Troops'].append(item)
@@ -207,9 +204,6 @@ def new_warband():
         if validate_band_cash_new(createdband) == False:
             return render_template('blankband.html', people=app.troops, captain=app.captain, ensign=app.ensign,
                                    specs=app.specialisms, skills=app.skillsets, weaps=app.weapon), httpcodes.BAD_REQUEST
-
-        # define band treasury
-        createdband['Treasury'] = int(request.form['remainingGold'])
 
         # store band details
         pickle.dump(createdband,
@@ -239,6 +233,7 @@ def edit_warband():
         os.mkdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"))
         bands = None
 
+    # give client bandlist template
     if request.method == 'GET':
         return render_template('bandlist.html', bands=bands), httpcodes.OK
 
@@ -248,22 +243,24 @@ def edit_given_warband(band):
     loadedband = pickle.load(
         open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), band), "rb"))
 
+    # gives client warband details and editband template
     if request.method == 'GET':
         return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
                                ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                weaps=app.weapon, capweaps=loadedband['capweap']), httpcodes.OK
 
+    # takes flask form containing warband details from client
     if request.method == 'POST':
 
-        # pull captain stats
+        # pulls various details from form
         bandname = request.form['bandname']
         capspec = request.form['capspec']
         capweap = json.loads(request.form['capweap'])
-
         skills = json.loads(request.form['capskill'])
         capweap = json.loads(request.form['capweap'])
         troops = json.loads(request.form['troops'])
 
+        # pull captain stats
         captain_move = request.form['capmove']
         captain_fight = request.form['capfight']
         captain_shoot = request.form['capshoot']
@@ -272,7 +269,10 @@ def edit_given_warband(band):
         captain_health = request.form['caphealth']
         captain_experience = request.form['capexperience']
 
+        # create band dictionary for warband detail storage
         createdband = dict()
+
+        # store details in dictionary
         createdband['Name'] = bandname
         createdband['Captain'] = dict(app.captain['Captain'])
         createdband['Captain']['Specialism'] = capspec
@@ -294,11 +294,9 @@ def edit_given_warband(band):
         # if ensign exists, pull ensign stats
         if 'hasensign' in request.form.keys():
 
-
             ensspec = request.form['ensspec']
+            #ensign skills proving difficult, using empty placeholder for now
             #ensskill = request.form['ensskill']
-            #DOES NOT CURRENTLY EXIST
-            #HIGH PRIORITY FIX
             #ensign_skill = json.loads(request.form['ensign_skill'])
             ensign_skill = []
             ensign_move = request.form['ensmove']
@@ -325,8 +323,7 @@ def edit_given_warband(band):
             for weapon in ensweap:
                 createdband['ensweap'].append(weapon)
 
-
-        #warband name sanitization
+        # warband name sanitisation
         cgi.escape(createdband['Name'])
 
         # create troops list
@@ -345,6 +342,7 @@ def edit_given_warband(band):
                                    weaps=app.weapon), httpcodes.BADREQUEST
 
         # warband cash validation
+        # method not currently funcitonal, always returns true
         if not validate_band_cash_edit(loadedband, createdband):
             print('cash valid fail')
             return render_template('editband.html', band=loadedband, people=app.troops, captain=app.captain,
@@ -367,13 +365,15 @@ def edit_given_warband(band):
             delete_given_warband(loadedband['Name'])
             print('Deleting duplicate!')
 
-        # set cash at remaining cash level
-        # NEED WAY TO ADD CASH
+        # set treasury from form
         createdband['Treasury'] = int(request.form['remainingGold'])
+
+        # store details
         pickle.dump(createdband,
                     open(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bands"), bandname),
                          "wb"))
 
+        # re-render edit band screen with made changes
         return render_template('editband.html', band=createdband, people=app.troops, captain=app.captain,
                                ensign=app.ensign, specs=app.specialisms, skills=app.skillsets,
                                weaps=app.weapon), httpcodes.OK

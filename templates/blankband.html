@@ -8,16 +8,22 @@ table, th, td { border: 1px solid black; text-align: left; }
   </head>
   <body>
 
+    <! warband name display/change >
     <h1>Warband</h1>
     <h2>Warband Name:<input type="text" id="bandnametext" name="bandnametext"></h2>
 
+    <! currency display >
     <table border="0">
       <tr>
         <td><h3>Currency remaining: </h3></td>
         <td id='remainingGold'>500</td>
       </tr>
     </table>
+
+    <! captain display >
     <table id="captainTable">
+
+      <! captain stat headings >
       <tr>
         <td>Move</td>
         <td>Fight</td>
@@ -31,6 +37,7 @@ table, th, td { border: 1px solid black; text-align: left; }
       </tr>
       <tr>
 
+        <! captain stat values >
         <td>{{captain['Captain']['Move']}}</td>
         <td>{{captain['Captain']['Fight']}}</td>
         <td>{{captain['Captain']['Shoot']}}</td>
@@ -38,6 +45,7 @@ table, th, td { border: 1px solid black; text-align: left; }
         <td>{{captain['Captain']['Morale']}}</td>
         <td>{{captain['Captain']['Health']}}</td>
 
+        <! captain specialism >
         <td><select id="capspecsel" onchange="setCapSkillchoice(this)">
           <option value="Empty">Select...</option>
           {% for spec in specs %}
@@ -45,6 +53,8 @@ table, th, td { border: 1px solid black; text-align: left; }
           <option value="{{ spec }}">{{ spec }}</option>
           {% endfor %}
           </select></td>
+
+        <! captain weaponry >
         <td>
             {% for weap in weaps %}
             <input type="checkbox" id="{{weap}}_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
@@ -54,10 +64,18 @@ table, th, td { border: 1px solid black; text-align: left; }
         <td></td>
       </tr>
 
+      <! END OF CAPTAIN >
+      <! START OF ENSIGN >
+
     </table>
     Hire ensign? <input type="checkbox" name="appHire" id="ensHire" onClick="hireEng()">250gc<br>
+
+
+    <!ensign block hidden/shown dependant on ensign existence >
     <div id="ensignDiv" style='display: none'>
       <table id="ensignTable">
+
+        <! ensign stat headings >
         <tr>
           <td>Move</td>
           <td>Fight</td>
@@ -69,6 +87,8 @@ table, th, td { border: 1px solid black; text-align: left; }
           <td>Weapons and Equipment</td>
           <td>Skills</td>
         </tr>
+
+        <! ensign stat values >
         <tr>
           <td>{{ensign['Ensign']['Move']}}</td>
           <td>{{ensign['Ensign']['Fight']}}</td>
@@ -77,6 +97,8 @@ table, th, td { border: 1px solid black; text-align: left; }
           <td>{{ensign['Ensign']['Morale']}}</td>
           <td>{{ensign['Ensign']['Health']}}</td>
           <td>
+
+            <! ensign specialism >
             <select id="ensskillsel" onchange="setEnsSkillchoice(this)">
               <option value="Empty">Select...</option>
               {% for spec in specs %}
@@ -85,6 +107,8 @@ table, th, td { border: 1px solid black; text-align: left; }
               {% endfor %}
             </select>
           </td>
+
+          <! ensign weapons >
         <td>
             {% for weap in weaps %}
             <input type="checkbox" id="{{weap}}_ens_check" onclick="updateCost()" value="{{weap}}">{{weap}}<br>
@@ -93,10 +117,15 @@ table, th, td { border: 1px solid black; text-align: left; }
           </td>
           <td></td>
         </tr>
-
       </table>
     </div>
+
+    <! END OF ENSIGN >
+    <! START OF TROOPS >
+
     <table id='rosterTable'>
+
+      <! stat headings >
       <tr>
         <td>Class</td>
         <td>Move</td>
@@ -108,6 +137,8 @@ table, th, td { border: 1px solid black; text-align: left; }
         <td>Cost</td>
         <td>Notes</td>
       </tr>
+
+      <! stat values for hired troops >
       {% for i in range(1,9) %}
       <tr>
         <td>
@@ -129,20 +160,28 @@ table, th, td { border: 1px solid black; text-align: left; }
       </tr>
       {% endfor %}
     </table>
+
+    <! create/reset buttons >
     <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
-    <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" />
+    <input id="clear" type="button" value="Reset" onclick="window.location.href='/new'" /><br><br>
+<tr><td></td><td><button onclick="window.location.href='/'">Main Menu</button></td></tr>
+
+
   </body>
 
 <script type="text/javascript">
+
+
+  //initialise and define various variables
   var total = 500;
   var engHire = false;
   var skill_list = ["{{ skill_list|join("\",\"")|safe }}"];
-  console.log(skill_list);
   var captain_skill_choice;
   var ensign_skill_choice;
 
 
-  // toggles ensign hire
+  // toggles ensign block and engHire value,
+  // exacts cost for hiring ensign
   function hireEng()
   {
     // if hiring ensign, show ensign block, subtract cost
@@ -165,42 +204,30 @@ table, th, td { border: 1px solid black; text-align: left; }
   }
 
 
+  //occurs on skill change
+  function updateSkills()
+  {
 
+    {% for skill in skill_list %}
+    if(document.getElementById('{{skill}}'))
+    {
+      if(document.getElementById('{{skill}}').checked)
+      {
+        captain_skill_choice = "{{skill}}";
+      }
+    }
 
-//occurs on skill change
-function updateSkills()
-{
+    if(document.getElementById('{{skill}}_ensign'))
+    {
+      if(document.getElementById('{{skill}}_ensign').checked)
+      {
+        ensign_skill_choice = "{{skill}}";
+      }
+    }
 
+    {% endfor %}
 
-{% for skill in skill_list %}
-if(document.getElementById('{{skill}}'))
-{
-if(document.getElementById('{{skill}}').checked)
-{
-captain_skill_choice = "{{skill}}";
-}
-}
-
-if(document.getElementById('{{skill}}_ensign'))
-{
-if(document.getElementById('{{skill}}_ensign').checked)
-{
-ensign_skill_choice = "{{skill}}";
-}
-}
-
-{% endfor %}
-
-console.log(captain_skill_choice);
-console.log(ensign_skill_choice);
-
-
-}
-
-
-
-
-
+  }
 
 
   //occurs on troop change
@@ -208,60 +235,64 @@ console.log(ensign_skill_choice);
  {
    var sel = x.value;
 
-   var myTable = document.getElementById('rosterTable');
+   var troopTable = document.getElementById('rosterTable');
 
    //if troop fired
    if(sel == "Empty")
    {
-     myTable.rows[row].cells[1].innerHTML = '-';
-     myTable.rows[row].cells[2].innerHTML = '-';
-     myTable.rows[row].cells[3].innerHTML = '-';
-     myTable.rows[row].cells[4].innerHTML = '-';
-     myTable.rows[row].cells[5].innerHTML = '-'
-     myTable.rows[row].cells[6].innerHTML = '-';
-     myTable.rows[row].cells[7].innerHTML = 0;
-     myTable.rows[row].cells[8].innerHTML = '-';
+     troopTable.rows[row].cells[1].innerHTML = '-';
+     troopTable.rows[row].cells[2].innerHTML = '-';
+     troopTable.rows[row].cells[3].innerHTML = '-';
+     troopTable.rows[row].cells[4].innerHTML = '-';
+     troopTable.rows[row].cells[5].innerHTML = '-'
+     troopTable.rows[row].cells[6].innerHTML = '-';
+     troopTable.rows[row].cells[7].innerHTML = 0;
+     troopTable.rows[row].cells[8].innerHTML = '-';
    }
 
    //if troop hired
    {% for troop in people.keys() %}
    if(sel == "{{troop}}")
    {
-     myTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
-     myTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
-     myTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
-     myTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
-     myTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
-     myTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
-     myTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
-     myTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
+     troopTable.rows[row].cells[1].innerHTML = '{{ people[troop]['Move'] }}';
+     troopTable.rows[row].cells[2].innerHTML = '{{ people[troop]['Fight'] }}';
+     troopTable.rows[row].cells[3].innerHTML = '{{ people[troop]['Shoot'] }}';
+     troopTable.rows[row].cells[4].innerHTML = '{{ people[troop]['Shield'] }}';
+     troopTable.rows[row].cells[5].innerHTML = '{{ people[troop]['Morale'] }}';
+     troopTable.rows[row].cells[6].innerHTML = '{{ people[troop]['Health'] }}';
+     troopTable.rows[row].cells[7].innerHTML = {{ people[troop]['Cost'] }};
+     troopTable.rows[row].cells[8].innerHTML = '{{ people[troop]['Notes'] }}';
    }
    {% endfor %}
    updateCost();
    }
 
+
+   //client-side validation function
+   //currently tests for money and warband name problems
    function validate()
    {
-    console.log('validating')
+      console.log('validating');
+
    if(total < 0)
    {
-   alert("Insufficient funds!")
+   alert("Insufficient funds!");
    return false
    }
 
    if((document.getElementById('bandnametext').value) == "")
    {
-   alert("Please name your Warband!")
+   alert("Please name your Warband!");
    return false
 
    }
-
+    console.log('validation successful');
     return true
 
    }
 
 
-// sum up troop cost, subtract from current funds
+// sum up warband cost, subtract from 500, set as current funds
 function updateCost()
 {
 
@@ -296,7 +327,6 @@ function updateCost()
    {% endfor %}
 
 
-
     //subtract troop cost from current funds
     total = 500 - sum;
     remainingGold.innerHTML = total;
@@ -304,7 +334,7 @@ function updateCost()
   }
 
 
-   // store choice made for captain's skill
+   // creates captain skill buttons based on specialism choice
     function setCapSkillchoice(x)
     {
 
@@ -354,6 +384,7 @@ function updateCost()
          {% endfor %}
          }
 
+    //creates ensign skill buttons based on specialism choice
     function setEnsSkillchoice(x)
     {
 
@@ -402,10 +433,11 @@ function updateCost()
      {% endfor %}
    }
 
+
+
     // shamelessly stolen from http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
     // One hopes tis indeed foolproof.
-    // Use the browser's built-in functionality to quickly and safely escape
-    // the string
+    // Use the browser's built-in functionality to quickly and safely escape the string
     function escapeHTML(str)
     {
     var div = document.createElement('div');
@@ -413,10 +445,12 @@ function updateCost()
     return div.innerHTML;
     }
 
+
+   //run validation, submits band details to server
    function doFormSubmit(total)
    {
-     // Set method to post by default if not specified.
-     method =  "post";
+      // Set method to post by default if not specified.
+      method =  "post";
 
       //band validation
       if(!(validate()))
@@ -425,74 +459,59 @@ function updateCost()
       }
 
 
+     //function to submit given values to flask form
+     function submit_element(var_name, input_value)
+     {
 
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", "/new");
+     var element = document.createElement("input");
+     element.setAttribute("type", "hidden");
+     element.setAttribute("value", input_value);
+     element.setAttribute("name", var_name);
+     form.appendChild(element);
 
-     console.log(total)
+     }
 
-     var remainingGold = document.createElement("input");
-     remainingGold.setAttribute("type", "hidden");
-     remainingGold.setAttribute("name", "remainingGold");
-     remainingGold.setAttribute("value", total);
-     form.appendChild(remainingGold);
+     //create flask form to pass to server
+     var form = document.createElement("form");
+     form.setAttribute("method", method);
+     form.setAttribute("action", "/new");
 
-     //sanitize first!
-     var bandname = document.createElement("input");
-            bandname.setAttribute("type", "hidden");
-            bandname.setAttribute("name", "bandname");
-            bandname.setAttribute("value", escapeHTML(document.getElementById('bandnametext').value));
-            form.appendChild(bandname);
-     var capspec = document.createElement("input");
-            capspec.setAttribute("type", "hidden");
-            capspec.setAttribute("name", "capspec");
-            capspec.setAttribute("value", document.getElementById('capspecsel').value);
-            form.appendChild(capspec);
-     var capskill = document.createElement("input");
-            capskill.setAttribute("type", "hidden");
-            capskill.setAttribute("name", "capskill");
-            capskill.setAttribute("value", captain_skill_choice);
-            form.appendChild(capskill);
+     submit_element("remainingGold",total);
 
+
+     //sanitize bandname before submission! the last thing we want is script injection.
+     submit_element("bandname", escapeHTML(document.getElementById('bandnametext').value));
+
+
+     //captain specialism/skill choice
+     submit_element("capspec", document.getElementById('capspecsel').value);
+     submit_element("capskill", captain_skill_choice);
+
+
+     //captain weapons
      var capweap_array = []
-                {% for weap in weaps %}
+     {% for weap in weaps %}
+       if(document.getElementById("{{weap}}_check").checked)
+       {
+         var weapon = "{{weap}}"
+         capweap_array.push(weapon)
+       }
+     {% endfor %}
+     submit_element("capweap", JSON.stringify(capweap_array));
 
-                  if(document.getElementById("{{weap}}_check").checked)
-                  {
-                   var weapon = "{{weap}}"
-                   //sum += {{weaps[weap]}};
-                   capweap_array.push(weapon)
-                  }
 
-
-                 {% endfor %}
-
-                 console.log(capweap_array)
-
-     var capweap = document.createElement("input");
-            capweap.setAttribute("type", "hidden");
-            capweap.setAttribute("name", "capweap");
-            capweap.setAttribute("value", JSON.stringify(capweap_array));
-            form.appendChild(capweap);
-
+     //if ensign has been hired, submit ensign details
      if (engHire)
      {
-      var hasensign = document.createElement("input");
-            hasensign.setAttribute("type", "hidden");
-            hasensign.setAttribute("name", "hasensign");
-            hasensign.setAttribute("value", engHire);
-            form.appendChild(hasensign);
-      var ensspec = document.createElement("input");
-            ensspec.setAttribute("type", "hidden");
-            ensspec.setAttribute("name", "ensspec");
-            ensspec.setAttribute("value", document.getElementById('ensskillsel').value);
-            form.appendChild(ensspec);
-     var ensskill = document.createElement("input");
-            ensskill.setAttribute("type", "hidden");
-            ensskill.setAttribute("name", "ensskill");
-            ensskill.setAttribute("value", ensign_skill_choice);
-            form.appendChild(ensskill);
+
+
+     // ensign existence, specialism/skill choice
+     submit_element("hasensign", engHire);
+     submit_element("ensspec", document.getElementById('ensskillsel').value);
+     submit_element("ensskill", ensign_skill_choice);
+
+
+     //ensign weapons
      var ensweap_array = []
                 {% for weap in weaps %}
 
@@ -506,30 +525,26 @@ function updateCost()
                  {% endfor %}
 
                  console.log(ensweap_array)
-
-     var ensweap = document.createElement("input");
-            ensweap.setAttribute("type", "hidden");
-            ensweap.setAttribute("name", "ensweap");
-            ensweap.setAttribute("value", JSON.stringify(ensweap_array));
-            form.appendChild(ensweap);
+     submit_element("ensweap", JSON.stringify(ensweap_array));
 
        }
+       //end of ensign if statement
 
+
+     //troop details
      var troopsarr = []
              for(i = 1; i < 9; i++)
              {
                var selector = document.getElementById('troop'+i);
                troopsarr.push(selector.value);
              }
-     var troops = document.createElement("input");
-            troops.setAttribute("type", "hidden");
-            troops.setAttribute("name", "troops");
-            troops.setAttribute("value", JSON.stringify(troopsarr));
-            form.appendChild(troops);
+     submit_element("troops", JSON.stringify(troopsarr))
 
 
+    //form submission
     document.body.appendChild(form);
     form.submit();
+    console.log('form submit successful!')
    }
 
   </script>

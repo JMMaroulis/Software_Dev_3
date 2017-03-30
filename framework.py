@@ -1,5 +1,4 @@
 import httpcodes
-import logging
 import json
 import os
 import pickle
@@ -53,7 +52,7 @@ app.skill_list = ['Repair', 'Sabotage', 'Augment',  'Bolster', 'Terror', 'Counte
                   'Aim', 'Pierce', 'Reload', 'Squad', 'Ambush', 'Surround',
                   'Block', 'Risposte', 'Dual', 'Shield', 'Sacrifice', 'Resolute']
 
-# available items list
+# available items/cost dictionary
 app.weapon = {'Blaster': 5, 'Needle Gun': 12, 'Blade': 3, 'Cannon': 15, 'Whip': 5}
 
 # item costs dictionary

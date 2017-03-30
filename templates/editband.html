@@ -287,8 +287,9 @@
 
     <! create / cancel buttons >
 
-      <input id="creator" type="button" value="Create Warband" onclick="doFormSubmit(total);" />
-      <input id="cancel" type="button" value="Cancel" onclick="window.location.href='/edit'" />
+      <input id="creator" type="button" value="Commit Changes" onclick="doFormSubmit(total);" />
+      <input id="cancel" type="button" value="Cancel Changes" onclick="window.location.href='/edit'" />
+      <tr><td></td><td><button onclick="window.location.href='/'">Main Menu</button></td></tr>
       </div>
       </body>
 
@@ -453,8 +454,8 @@
 
 
            //apparently the whole people=app.troops thing REFUSES TO OBEY ITS MASTER
-           //so here's a new dictionary one can actually [expletive] access
-           //I'm fully aware that it's bad practice, and at this point I really don't care
+           //so here's a new dictionary one can actually access
+           //I'm fully aware that it's bad practice, but at this point I lack the time to figure out how to do this otherwise
            troop_costs = {'Augment Gorilla': 20, 'Lackey': 20, 'Security':  80, 'Engineer':60, 'Medic': 50, 'Commando':  100, 'Combat Droid': 150,}
 
 
@@ -660,7 +661,7 @@
 
      }
 
-     //sanitise bandname input
+     //sanitise and submit bandname input
      submit_element("bandname", escapeHTML(document.getElementById('bandnametext').value));
 
 
